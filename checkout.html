@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEase - Checkout</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        header { background: #333; color: white; padding: 1rem; display: flex; justify-content: space-between; }
+        nav ul { display: flex; list-style: none; }
+        nav ul li { margin-left: 1rem; }
+        nav a { color: white; text-decoration: none; }
+        .checkout-container { display: flex; padding: 2rem; gap: 2rem; }
+        .shipping-form { flex: 2; }
+        .order-summary { flex: 1; background: #f0f0f0; padding: 1rem; }
+        .cart-item { display: flex; justify-content: space-between; margin-bottom: 1rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.5rem; }
+        input, select { width: 100%; padding: 0.5rem; }
+        .checkout-btn { background: #4CAF50; color: white; border: none; padding: 1rem; width: 100%; cursor: pointer; }
+        footer { background: #333; color: white; text-align: center; padding: 1rem; margin-top: 2rem; }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>ShopEase</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="products.html">Shop</a></li>
+                <li><a href="checkout.html">Cart (0)</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <div class="checkout-container">
+        <section class="shipping-form">
+            <h2>Shipping Information</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" required>
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" required>
+                </div>
+                <div class="form-group">
+                    <label for="zip">ZIP Code</label>
+                    <input type="text" id="zip" required>
+                </div>
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <select id="country" required>
+                        <option value="">Select Country</option>
+                        <option value="US">United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="UK">United Kingdom</option>
+                    </select>
+                </div>
+                <h3>Payment Information</h3>
+                <div class="form-group">
+                    <label for="card">Card Number</label>
+                    <input type="text" id="card" required>
+                </div>
+                <div class="form-group">
+                    <label for="expiry">Expiry Date</label>
+                    <input type="text" id="expiry" placeholder="MM/YY" required>
+                </div>
+                <div class="form-group">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" required>
+                </div>
+                <button type="submit" class="checkout-btn">Complete Purchase</button>
+            </form>
+        </section>
+        
+        <section class="order-summary">
+            <h2>Order Summary</h2>
+            <div id="cartItems">
+                <!-- Cart items will be loaded here -->
+            </div>
+            <hr>
+            <div class="cart-totals">
+                <p>Subtotal: <span id="subtotal">$0.00</span></p>
+                <p>Shipping: <span id="shipping">$5.99</span></p>
+                <p>Tax: <span id="tax">$0.00</span></p>
+                <h3>Total: <span id="total">$0.00</span></h3>
+            </div>
+        </section>
+    </div>
+    
+    <footer>
+        <p>&copy; 2023 ShopEase. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Load cart items
+        function loadCart() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const cartItemsContainer = document.getElementById('cartItems');
+            let subtotal = 0;
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Your cart is empty</p>';
+                document.getElementById('subtotal').textContent = '$0.00';
+                document.getElementById('tax').textContent = '$0.00';
+                document.getElementById('total').textContent = '$0.00';
+                return;
+            }
+            
+            cartItemsContainer.innerHTML = '';
+            
+            cart.forEach(item => {
+                const itemTotal = item.price * item.quantity;
+                subtotal += itemTotal;
+                
+                const itemElement = document.createElement('div');
+                itemElement.className = 'cart-item';
+                itemElement.innerHTML = `
+                    <div>
+                        <h4>${item.name}</h4>
+                        <p>${item.quantity} x $${item.price.toFixed(2)}</p>
+                    </div>
+                    <p>$${itemTotal.toFixed(2)}</p>
+                `;
+                cartItemsContainer.appendChild(itemElement);
+            });
+            
+            const shipping = 5.99;
+            const tax = subtotal * 0.08; // 8% tax
+            const total = subtotal + shipping + tax;
+            
+            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+        }
+        
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // In a real app, you would process payment here
+            alert('Order placed successfully! Thank you for your purchase.');
+            
+            // Clear cart
+            localStorage.removeItem('cart');
+            localStorage.setItem('cartCount', 0);
+            
+            // Update cart display
+            document.querySelector('nav ul li:last-child a').textContent = 'Cart (0)';
+            
+            // Redirect to homepage
+            window.location.href = 'index.html';
+        });
+        
+        // Initial load
+        loadCart();
+        
+        // Cart count update
+        let cartCount = localStorage.getItem('cartCount') || 0;
+        document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
+    </script>
+</body>
+</html>
