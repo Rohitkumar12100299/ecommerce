@@ -32,35 +32,7 @@
         event: []
       };
     </script>
- <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
-     <script>
-        // Cart count update
-        let cartCount = localStorage.getItem('cartCount') || 0;
-        document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
-
-        // CTA button click tracking
-        document.getElementById('cta-shop-now').addEventListener('click', function () {
-            window.digitalData = window.digitalData || {};
-            window.digitalData.event = window.digitalData.event || [];
-
-            window.digitalData.event.push({
-                eventInfo: {
-                    eventName: "ctaClick",
-                    eventAction: "click",
-                    eventLabel: "Shop Now - Hero",
-                    timestamp: new Date().toISOString()
-                },
-                component: {
-                    componentName: "Hero Banner",
-                    componentType: "CTA Button"
-                }
-            });
-
-            // Navigate to products page
-            window.location.href = 'products.html';
-        });
-    </script>
-   
+ 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
         body { background-color: #f9f9f9; }
@@ -224,7 +196,35 @@
     <footer>
         <p>&copy; 2023 ShopEase. All rights reserved.</p>
     </footer>
+<script>
+    // Cart count update
+    let cartCount = localStorage.getItem('cartCount') || 0;
+    document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
 
+    // CTA button click tracking
+    document.getElementById('cta-shop-now').addEventListener('click', function () {
+        window.digitalData = window.digitalData || {};
+        window.digitalData.event = window.digitalData.event || [];
+
+        const ctaEvent = {
+            eventInfo: {
+                eventName: "ctaClick",
+                eventAction: "click",
+                eventLabel: "Shop Now - Hero",
+                timestamp: new Date().toISOString()
+            },
+            component: {
+                componentName: "Hero Banner",
+                componentType: "CTA Button"
+            }
+        };
+
+        window.digitalData.event.push(ctaEvent);
+        console.log("CTA Click Event:", ctaEvent); // ✅ For debug
+
+        window.location.href = 'products.html';
+    });
+</script>
    
 </body>
 </html>
