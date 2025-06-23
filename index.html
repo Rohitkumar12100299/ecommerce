@@ -49,7 +49,7 @@
     })();
   </script>
 
-  <!-- Load Adobe Launch (Development Environment) -->
+  <!-- Adobe Launch Dev -->
   <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
 
   <style>
@@ -136,6 +136,8 @@
     <h2>Welcome to ShopEase</h2>
     <p>Discover amazing products at great prices with free shipping on orders over $50</p>
     <button id="cta-shop-now">Shop Now</button>
+    <button id="cta-learn-more">Learn More</button>
+    <button id="cta-featured-sale">Check Sale</button>
   </section>
 
   <footer>
@@ -143,37 +145,46 @@
   </footer>
 
   <script>
-    // Cart count update
+    // Update cart display from localStorage
     const cartCount = localStorage.getItem('cartCount') || 0;
     document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
 
-    // CTA Click Tracking
-    document.getElementById('cta-shop-now').addEventListener('click', function () {
-      const ctaEvent = {
+    // Reusable digitalData push function for all CTA buttons
+    function trackButtonClick(label, componentName) {
+      const eventObj = {
         eventInfo: {
           eventName: "ctaClick",
           eventAction: "click",
-          eventLabel: "Shop Now - Hero",
+          eventLabel: label,
           timestamp: new Date().toISOString()
         },
         component: {
-          componentName: "Hero Banner",
+          componentName: componentName,
           componentType: "CTA Button"
         }
       };
+      window.digitalData.event.push(eventObj);
+    }
 
-      // Push event to digitalData
-      window.digitalData.event.push(ctaEvent);
+    // Attach tracking to each button
+    document.querySelectorAll("button").forEach(button => {
+      button.addEventListener("click", function () {
+        const label = this.textContent.trim();
+        const id = this.id || "unknown-button";
+        trackButtonClick(label, id);
 
-      // Optional delay before navigation to allow event to be processed
-      setTimeout(() => {
-        window.location.href = "products.html";
-      }, 300);
+        // Example redirect for "Shop Now" only
+        if (id === "cta-shop-now") {
+          setTimeout(() => {
+            window.location.href = "products.html";
+          }, 300);
+        }
+      });
     });
 
-    // Just to verify: listen to custom event in console
+    // Debug output to verify in console
     window.addEventListener("digitalDataEventPushed", function (e) {
-      console.log("📡 Received digitalDataEventPushed:", e.detail);
+      console.log("📡 Event pushed to digitalData:", e.detail);
     });
   </script>
 </body>
