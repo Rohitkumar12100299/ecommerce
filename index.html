@@ -5,33 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopEase - Home</title>
     <script>
-  window.digitalData = {
-    page: {
-      pageInfo: {
-        pageName: "ShopEase:Home",
-        pageType: "homepage",
-        language: "en-US",
-        siteSection: "homepage",
-        siteName: "ShopEase",
-        environment: "development"
-      }
-    },
-    user: {
-      profile: [{
-        profileInfo: {
-          userId: null, // or dynamically fetch from auth if logged in
-          userType: "guest" // or "registered"
-        }
-      }]
-    },
-    cart: {
-      cartID: null,
-      cartTotal: 0,
-      cartItems: 0
-    }
-  };
-</script>
-
+      window.digitalData = {
+        page: {
+          pageInfo: {
+            pageName: "ShopEase:Home",
+            pageType: "homepage",
+            language: "en-US",
+            siteSection: "homepage",
+            siteName: "ShopEase",
+            environment: "development"
+          }
+        },
+        user: {
+          profile: [{
+            profileInfo: {
+              userId: null,
+              userType: "guest"
+            }
+          }]
+        },
+        cart: {
+          cartID: null,
+          cartTotal: 0,
+          cartItems: 0
+        },
+        event: []
+      };
+    </script>
     <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
@@ -163,7 +163,7 @@
     <section class="hero">
         <h2>Welcome to ShopEase</h2>
         <p>Discover amazing products at great prices with free shipping on orders over $50</p>
-        <button onclick="location.href='products.html'">Shop Now</button>
+        <button id="cta-shop-now">Shop Now</button>
     </section>
     
     <section class="featured">
@@ -201,6 +201,28 @@
         // Cart count update
         let cartCount = localStorage.getItem('cartCount') || 0;
         document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
+
+        // CTA button click tracking
+        document.getElementById('cta-shop-now').addEventListener('click', function () {
+            window.digitalData = window.digitalData || {};
+            window.digitalData.event = window.digitalData.event || [];
+
+            window.digitalData.event.push({
+                eventInfo: {
+                    eventName: "ctaClick",
+                    eventAction: "click",
+                    eventLabel: "Shop Now - Hero",
+                    timestamp: new Date().toISOString()
+                },
+                component: {
+                    componentName: "Hero Banner",
+                    componentType: "CTA Button"
+                }
+            });
+
+            // Navigate to products page
+            window.location.href = 'products.html';
+        });
     </script>
 </body>
 </html>
