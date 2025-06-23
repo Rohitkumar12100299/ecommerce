@@ -5,23 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopEase - Products</title>
    
-    <script src="https://cdn.adobe.com/client-data-layer/1.0.0/clientDataLayer.min.js"></script>
-<script>
-  window.adobeDataLayer = window.adobeDataLayer || [];
 
-  adobeDataLayer.push({
-    event: "pageLoad",
+ 
+
+ <script>
+  window.digitalData = {
     page: {
       pageInfo: {
         pageName: "product listing",
         pageType: "category",
         language: "en-US",
         siteSection: "products",
-        siteName: "ShopEase"
+        siteName: "ShopEase",
+        environment: "development"
       }
-    }
-  });
+    },
+    user: {
+      profile: [{
+        profileInfo: {
+          userId: null,
+          userType: "guest"
+        }
+      }]
+    },
+    cart: {
+      cartID: null,
+      cartTotal: 0,
+      cartItems: 0
+    },
+    event: []
+  };
 </script>
+
 
      <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
     <style>
