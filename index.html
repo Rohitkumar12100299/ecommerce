@@ -220,9 +220,12 @@
         };
 
         window.digitalData.event.push(ctaEvent);
-        console.log("CTA Click Event:", ctaEvent); // ✅ For debug
+        console.log("CTA Click Event:", ctaEvent); // ✅ See this in DevTools
 
-        window.location.href = 'products.html';
+        // ✅ Add delay so the event registers before redirect
+        setTimeout(function () {
+            window.location.href = 'products.html';
+        }, 300);
     });
 </script>
    
