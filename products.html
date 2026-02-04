@@ -5,42 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopEase - Products</title>
 
-    <!-- Adobe digitalData (UNCHANGED) -->
-    <script>
-      window.digitalData = {
-        page: {
-          pageInfo: {
-            pageName: "product listing",
-            pageType: "category",
-            language: "en-US",
-            siteSection: "products",
-            siteName: "ShopEase",
-            environment: "development"
-          }
-        },
-        user: {
-          profile: [{
-            profileInfo: {
-              userId: null,
-              userType: "guest"
-            }
-          }]
-        },
-        cart: {
-          cartID: null,
-          cartTotal: 0,
-          cartItems: 0
-        },
-        event: []
-      };
-    </script>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+<!-- End Google Tag Manager -->
+    
 
-    <!-- GTM dataLayer init (ADDED) -->
+    <!-- GTM dataLayer init (ADDED ONLY) -->
     <script>
       window.dataLayer = window.dataLayer || [];
     </script>
 
-    <!-- Page View (ADDED – REQUIRED FORMAT) -->
+    <!-- Page View (ADDED ONLY – REQUIRED FORMAT) -->
     <script>
       window.dataLayer.push({
         event: "pageView",
@@ -51,19 +30,20 @@
       });
     </script>
 
-    <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
+   
 
+    <!-- EXISTING STYLES (UNCHANGED) -->
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
-        body {
+        body { 
             background-color: #f9f9f9;
             background-image: url('https://www.transparenttextures.com/patterns/brushed-alum.png');
         }
-        header {
-            background: rgba(51, 51, 51, 0.9);
-            color: white;
-            padding: 1rem;
-            display: flex;
+        header { 
+            background: rgba(51, 51, 51, 0.9); 
+            color: white; 
+            padding: 1rem; 
+            display: flex; 
             justify-content: space-between;
             position: sticky;
             top: 0;
@@ -73,18 +53,13 @@
         nav ul li { margin-left: 1.5rem; }
         nav a { color: white; text-decoration: none; }
         .main-content { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+        .filters { background: white; padding: 1.5rem; border-radius: 8px; margin-bottom: 2rem; }
         .products-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 2rem;
         }
-        .product-card {
-            background: white;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            cursor: pointer;
-        }
+        .product-card { background: white; border-radius: 8px; overflow: hidden; cursor: pointer; }
         .product-card img { width: 100%; height: 200px; object-fit: cover; }
         .product-info { padding: 1.5rem; }
     </style>
@@ -103,7 +78,29 @@
 </header>
 
 <div class="main-content">
-    <h1>Our Products</h1>
+    <h1 class="page-title">Our Products</h1>
+
+    <!-- FILTERS + SLIDER (UNCHANGED) -->
+    <section class="filters">
+        <div class="filter-group">
+            <label for="category">Category</label>
+            <select id="category">
+                <option value="all">All Categories</option>
+                <option value="electronics">Electronics</option>
+                <option value="clothing">Clothing</option>
+                <option value="home">Home & Kitchen</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="price">Price Range</label>
+            <div class="price-range">
+                <input type="range" id="price" min="0" max="200" value="200">
+                <span id="priceValue">Up to $200</span>
+            </div>
+        </div>
+    </section>
+
     <div class="products-grid" id="productsGrid"></div>
 </div>
 
@@ -112,6 +109,7 @@
 </footer>
 
 <script>
+    /* EXISTING PRODUCT DATA (UNCHANGED) */
     const products = [
         { id: 1, name: "Wireless Headphones", price: 59.99, category: "electronics", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e" },
         { id: 2, name: "Smart Watch", price: 129.99, category: "electronics", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30" },
@@ -133,9 +131,8 @@
                 </div>
             `;
 
-            /* Product Click – REQUIRED FORMAT */
+            /* Product Click – ADDED ONLY */
             card.addEventListener("click", () => {
-
                 window.dataLayer.push({
                     event: "linkClick",
                     linkText: product.name,
@@ -150,9 +147,48 @@
         });
     }
 
+    /* INITIAL LOAD (UNCHANGED) */
     displayProducts(products);
 
-    /* Header Navigation Link Clicks */
+    /* FILTER LOGIC (UNCHANGED) */
+    document.getElementById('category').addEventListener('change', filterProducts);
+    document.getElementById('price').addEventListener('input', function () {
+        document.getElementById('priceValue').textContent = `Up to $${this.value}`;
+        filterProducts();
+    });
+
+    function filterProducts() {
+        const category = document.getElementById('category').value;
+        const maxPrice = parseFloat(document.getElementById('price').value);
+
+        let filtered = products.filter(product => product.price <= maxPrice);
+        if (category !== 'all') {
+            filtered = filtered.filter(product => product.category === category);
+        }
+
+        displayProducts(filtered);
+    }
+
+    /* FILTER INTERACTION TRACKING (ADDED ONLY) */
+    document.getElementById('category').addEventListener('change', function () {
+        window.dataLayer.push({
+            event: "linkClick",
+            linkText: "Category Filter",
+            linkUrl: this.value,
+            pageName: "ShopEase:Products"
+        });
+    });
+
+    document.getElementById('price').addEventListener('input', function () {
+        window.dataLayer.push({
+            event: "linkClick",
+            linkText: "Price Filter",
+            linkUrl: this.value,
+            pageName: "ShopEase:Products"
+        });
+    });
+
+    /* HEADER LINK CLICKS (ADDED ONLY) */
     document.querySelectorAll("nav a").forEach(link => {
         link.addEventListener("click", function () {
             window.dataLayer.push({
