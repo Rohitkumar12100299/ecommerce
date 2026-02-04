@@ -5,7 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ShopEase - Home</title>
 
-  <!-- Digital Data Layer -->
+  <!-- ================= GTM DATA LAYER ================= -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
+
+  <!-- ================= PAGE LOAD EVENT ================= -->
+  <script>
+    dataLayer.push({
+      event: "pageView",
+      pageName: "ShopEase:Home",
+      pageType: "homepage",
+      siteName: "ShopEase",
+      language: "en-US"
+    });
+  </script>
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+<!-- End Google Tag Manager -->
+
+  <!-- ================= DIGITAL DATA (ADOBE) ================= -->
   <script>
     window.digitalData = {
       page: {
@@ -19,18 +42,13 @@
         }
       },
       user: {
-      
-          userInfo: {
-            
-            
-          
-            firstName: "Rohit",
-            middleName: "Kumar",
-            lastName: "Maurya",
-            age: 22,
-            gender: "male"
-          }
-      
+        userInfo: {
+          firstName: "Rohit",
+          middleName: "Kumar",
+          lastName: "Maurya",
+          age: 22,
+          gender: "male"
+        }
       },
       cart: {
         cartID: null,
@@ -40,8 +58,7 @@
       event: []
     };
 
-    // Override push to dispatch a custom event for Adobe Launch
-    (function() {
+    (function () {
       const originalPush = window.digitalData.event.push;
       window.digitalData.event.push = function () {
         const result = originalPush.apply(this, arguments);
@@ -49,18 +66,19 @@
           detail: arguments[0]
         });
         window.dispatchEvent(customEvent);
-        console.log("✅ digitalDataEventPushed dispatched:", arguments[0]);
+        console.log("✅ digitalDataEventPushed:", arguments[0]);
         return result;
       };
     })();
   </script>
 
-  <!-- Adobe Launch Dev -->
+  <!-- ================= ADOBE LAUNCH ================= -->
   <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Arial', sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { background-color: #f9f9f9; }
+
     header {
       background: rgba(51, 51, 51, 0.9);
       color: white;
@@ -71,18 +89,15 @@
       top: 0;
       z-index: 100;
     }
+
     nav ul { display: flex; list-style: none; }
     nav ul li { margin-left: 1.5rem; }
-    nav a {
-      color: white;
-      text-decoration: none;
-      font-weight: 500;
-      transition: color 0.3s;
-    }
+    nav a { color: white; text-decoration: none; font-weight: 500; }
     nav a:hover { color: #4CAF50; }
+
     .hero {
-      background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                  url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+      url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
       background-size: cover;
       background-position: center;
       color: white;
@@ -94,16 +109,10 @@
       justify-content: center;
       align-items: center;
     }
-    .hero h2 {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    }
-    .hero p {
-      font-size: 1.2rem;
-      margin-bottom: 2rem;
-      max-width: 600px;
-    }
+
+    .hero h2 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
+
     .hero button {
       background: #4CAF50;
       color: white;
@@ -112,11 +121,9 @@
       font-size: 1.1rem;
       border-radius: 4px;
       cursor: pointer;
-      transition: background 0.3s;
+      margin: 5px;
     }
-    .hero button:hover {
-      background: #45a049;
-    }
+
     footer {
       background: #333;
       color: white;
@@ -126,72 +133,92 @@
     }
   </style>
 </head>
+
 <body>
-  <header>
-    <h1>Rohit Ki Dukan</h1>
-    <nav>
-      <ul>
-        <li><a href="index.html">Home</a></li>
-        <li><a href="products.html">Shop</a></li>
-        <li><a href="checkout.html">Cart (0)</a></li>
-      </ul>
-    </nav>
-  </header>
 
-  <section class="hero">
-    <h2>Welcome to ShopEase</h2>
-    <p>Discover amazing products at great prices with free shipping on orders over $50</p>
-    <button id="cta-shop-now">Shop Now</button>
-    <button id="cta-learn-more">Learn More</button>
-    <button id="cta-featured-sale">Check Sale</button>
-  </section>
+<header>
+  <h1>Rohit Ki Dukan</h1>
+  <nav>
+    <ul>
+      <li><a href="index.html">Home</a></li>
+      <li><a href="products.html">Shop</a></li>
+      <li><a href="checkout.html">Cart (0)</a></li>
+    </ul>
+  </nav>
+</header>
 
-  <footer>
-    <p>&copy; 2023 ShopEase. All rights reserved.</p>
-  </footer>
+<section class="hero">
+  <h2>Welcome to ShopEase</h2>
+  <p>Discover amazing products at great prices</p>
+  <button id="cta-shop-now">Shop Now</button>
+  <button id="cta-learn-more">Learn More</button>
+  <button id="cta-featured-sale">Check Sale</button>
+</section>
 
-  <script>
-    // Update cart display from localStorage
-    const cartCount = localStorage.getItem('cartCount') || 0;
-    document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
+<footer>
+  <p>&copy; 2023 ShopEase. All rights reserved.</p>
+</footer>
 
-    // Reusable digitalData push function for all CTA buttons
-    function trackButtonClick(label, componentName) {
-      const eventObj = {
-        eventInfo: {
-          eventName: "ctaClick",
-          eventAction: "click",
-          event: label,
-          timestamp: new Date().toISOString()
-        },
-        component: {
-          componentName: componentName,
-          componentType: "CTA Button"
-        }
-      };
-      window.digitalData.event.push(eventObj);
-    }
+<script>
+  /* ================= CART COUNT ================= */
+  const cartCount = localStorage.getItem("cartCount") || 0;
+  document.querySelector("nav ul li:last-child a").textContent = `Cart (${cartCount})`;
 
-    // Attach tracking to each button
-    document.querySelectorAll("button").forEach(button => {
-      button.addEventListener("click", function () {
-        const label = this.textContent.trim();
-        const id = this.id || "unknown-button";
-        trackButtonClick(label, id);
-
-        // Example redirect for "Shop Now" only
-        if (id === "cta-shop-now") {
-          setTimeout(() => {
-            window.location.href = "products.html";
-          }, 300);
-        }
-      });
+  /* ================= ADOBE CTA TRACKING ================= */
+  function trackButtonClick(label, componentName) {
+    digitalData.event.push({
+      eventInfo: {
+        eventName: "ctaClick",
+        eventAction: "click",
+        event: label,
+        timestamp: new Date().toISOString()
+      },
+      component: {
+        componentName: componentName,
+        componentType: "CTA Button"
+      }
     });
+  }
 
-    // Debug output to verify in console
-    window.addEventListener("digitalDataEventPushed", function (e) {
-      console.log("📡 Event pushed to digitalData:", e.detail);
+  document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", function () {
+      trackButtonClick(this.innerText.trim(), this.id);
+
+      if (this.id === "cta-shop-now") {
+        setTimeout(() => {
+          window.location.href = "products.html";
+        }, 300);
+      }
     });
-  </script>
+  });
+
+  /* ================= GTM BUTTON CLICK ================= */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    dataLayer.push({
+      event: "buttonClick",
+      buttonText: btn.innerText.trim(),
+      buttonId: btn.id || "no-id",
+      pageName: "ShopEase:Home"
+    });
+  });
+
+  /* ================= GTM LINK CLICK ================= */
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a");
+    if (!link) return;
+
+    dataLayer.push({
+      event: "linkClick",
+      linkText: link.innerText.trim(),
+      linkUrl: link.getAttribute("href"),
+      pageName: "ShopEase:Home"
+    });
+  });
+
+</script>
+
 </body>
 </html>
