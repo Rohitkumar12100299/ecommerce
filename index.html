@@ -89,6 +89,9 @@
       justify-content: center;
       align-items: center;
     }
+
+    .hero h2 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
   </style>
 </head>
 
@@ -102,8 +105,8 @@
       <li><a href="products.html">Shop</a></li>
       <li><a href="checkout.html">Cart (0)</a></li>
 
-      <!-- ✅ ONLY ADDITION (NO CSS CHANGE) -->
-      <li><a href="javascript:void(0)" onclick="handleLogin()">Login</a></li>
+      <!-- ✅ LOGIN / LOGOUT BUTTON -->
+      <li><a href="javascript:void(0)" onclick="openLogin()">Login</a></li>
       <li><a href="javascript:void(0)" onclick="logout()">Logout</a></li>
     </ul>
   </nav>
@@ -114,33 +117,62 @@
   <p>Discover amazing products at great prices</p>
 </section>
 
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.6);
+  z-index:999;
+  justify-content:center;
+  align-items:center;
+">
+  <div style="background:#fff;padding:20px;width:300px;border-radius:6px;">
+    <h3>Login</h3>
+
+    <input id="loginEmail" type="email" placeholder="Email"
+      style="width:100%;padding:8px;margin:8px 0">
+
+    <input id="loginPassword" type="password" placeholder="Password"
+      style="width:100%;padding:8px;margin:8px 0">
+
+    <button onclick="submitLogin()" style="width:100%;padding:8px">
+      Login
+    </button>
+  </div>
+</div>
+
 <script>
-/* ================================================= */
-/* =============== LOGIN / LOGOUT =================== */
-/* ================================================= */
+/* ================= OPEN LOGIN ================= */
+function openLogin() {
+  document.getElementById("loginModal").style.display = "flex";
 
-function handleLogin() {
-
-  const email = "test@user.com";   // demo frontend user
-  const password = "123456";
-
-  /* 1️⃣ LOGIN INITIATED */
   dataLayer.push({ event: "login_initiated" });
   digitalData.event.push({
     eventInfo: { eventName: "login_initiated" }
   });
+}
 
-  /* 2️⃣ VALIDATION */
+/* ================= SUBMIT LOGIN ================= */
+function submitLogin() {
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
+
   if (!email || !password) {
-    dataLayer.push({ event: "login_failed", reason: "missing_credentials" });
+    dataLayer.push({
+      event: "login_failed",
+      reason: "missing_credentials"
+    });
+
     digitalData.event.push({
       eventInfo: { eventName: "login_failed" }
     });
-    alert("Login Failed");
+
+    alert("Email / Password missing");
     return;
   }
 
-  /* 3️⃣ LOGIN SUCCESS */
+  /* FRONTEND SUCCESS */
   localStorage.setItem("loggedInUser", JSON.stringify({ email }));
 
   dataLayer.push({
@@ -158,12 +190,12 @@ function handleLogin() {
     }
   });
 
+  document.getElementById("loginModal").style.display = "none";
   alert("Login Successful");
 }
 
 /* ================= LOGOUT ================= */
 function logout() {
-
   localStorage.removeItem("loggedInUser");
 
   dataLayer.push({ event: "logout" });
