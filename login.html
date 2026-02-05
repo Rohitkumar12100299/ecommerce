@@ -20,7 +20,8 @@
     language: "en-US"
   });
 </script>
-  <!-- Google Tag Manager -->
+
+<!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -34,30 +35,25 @@ body {
   font-family: Arial, sans-serif;
   background:#fff;
 }
-
 .container {
   max-width:420px;
   margin:80px auto;
 }
-
 h2 {
   text-align:center;
   font-weight:500;
 }
-
 .underline {
   width:40px;
   height:3px;
   background:#f5c400;
   margin:8px auto 30px;
 }
-
 label {
   font-size:14px;
   display:block;
   margin-bottom:6px;
 }
-
 input {
   width:100%;
   padding:12px;
@@ -65,18 +61,15 @@ input {
   border:1px solid #ddd;
   font-size:14px;
 }
-
 input:focus {
   outline:none;
   border:2px solid #000;
 }
-
 .actions {
   display:flex;
   align-items:center;
   gap:20px;
 }
-
 .primary-btn {
   background:#f5c400;
   border:none;
@@ -84,7 +77,6 @@ input:focus {
   font-weight:bold;
   cursor:pointer;
 }
-
 .link-btn {
   background:none;
   border:none;
@@ -107,7 +99,6 @@ input:focus {
   <label>Password</label>
   <input id="password" type="password">
 
-  <!-- Signup only field -->
   <div id="signupField" style="display:none">
     <label>Confirm Password</label>
     <input id="confirmPassword" type="password">
@@ -157,7 +148,10 @@ function submitForm() {
   dataLayer.push({ event: "login_initiated" });
 
   if (!emailVal || !passVal) {
-    dataLayer.push({ event: "login_failed" });
+    dataLayer.push({
+      event: "login_failed",
+      password_verification: "failed"
+    });
     alert("Please fill all fields");
     return;
   }
@@ -166,7 +160,10 @@ function submitForm() {
     const confirmVal = document.getElementById("confirmPassword").value.trim();
 
     if (passVal !== confirmVal) {
-      dataLayer.push({ event: "login_failed",password_verification: "failed" });
+      dataLayer.push({
+        event: "login_failed",
+        password_verification: "failed"
+      });
       alert("Passwords do not match");
       return;
     }
@@ -176,7 +173,7 @@ function submitForm() {
     localStorage.setItem("users", JSON.stringify(users));
 
     localStorage.setItem("loggedInUser", emailVal);
-    dataLayer.push({ event: "signup_success",,password_verification: "success" });
+    dataLayer.push({ event: "signup_success" });
 
     window.location.href = "index.html";
   } 
@@ -187,13 +184,19 @@ function submitForm() {
     );
 
     if (!validUser) {
-      dataLayer.push({ event: "login_failed" });
+      dataLayer.push({
+        event: "login_failed",
+        password_verification: "failed"
+      });
       alert("Invalid email or password");
       return;
     }
 
     localStorage.setItem("loggedInUser", emailVal);
-    dataLayer.push({ event: "login_success" });
+    dataLayer.push({
+      event: "login_success",
+      password_verification: "success"
+    });
 
     window.location.href = "index.html";
   }
@@ -202,4 +205,3 @@ function submitForm() {
 
 </body>
 </html>
-
