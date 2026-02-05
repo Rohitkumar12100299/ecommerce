@@ -105,11 +105,11 @@ input:focus {
   </div>
 
   <div class="actions">
-    <button class="primary-btn" onclick="submitForm()" id="submitBtn">
+    <button class="primary-btn" onclick="submitForm()" id="cta-login-submit">
       SIGN IN
     </button>
 
-    <button class="link-btn" onclick="toggleMode()" id="toggleBtn">
+    <button class="link-btn" onclick="toggleMode()" id="cta-login-toggle">
       CREATE ACCOUNT
     </button>
   </div>
@@ -125,10 +125,10 @@ function toggleMode() {
   document.getElementById("title").innerText =
     mode === "login" ? "Login" : "Create Account";
 
-  document.getElementById("submitBtn").innerText =
+  document.getElementById("submitBtn")?.innerText =
     mode === "login" ? "SIGN IN" : "SIGN UP";
 
-  document.getElementById("toggleBtn").innerText =
+  document.getElementById("toggleBtn")?.innerText =
     mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
 
   document.getElementById("signupField").style.display =
@@ -201,6 +201,18 @@ function submitForm() {
     window.location.href = "index.html";
   }
 }
+
+/* ================= CTA BUTTON CLICK TRACKING ================= */
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest("button");
+  if (!btn) return;
+
+  dataLayer.push({
+    event: "buttonClick",
+    buttonId: btn.id || "no-id",
+    buttonText: btn.innerText.trim()
+  });
+});
 </script>
 
 </body>
