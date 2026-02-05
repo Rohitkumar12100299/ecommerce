@@ -166,7 +166,7 @@ function submitForm() {
     const confirmVal = document.getElementById("confirmPassword").value.trim();
 
     if (passVal !== confirmVal) {
-      dataLayer.push({ event: "login_failed" });
+      dataLayer.push({ event: "login_failed",password_verification: "failed" });
       alert("Passwords do not match");
       return;
     }
@@ -176,7 +176,7 @@ function submitForm() {
     localStorage.setItem("users", JSON.stringify(users));
 
     localStorage.setItem("loggedInUser", emailVal);
-    dataLayer.push({ event: "signup_success" });
+    dataLayer.push({ event: "signup_success",,password_verification: "success" });
 
     window.location.href = "index.html";
   } 
@@ -202,3 +202,4 @@ function submitForm() {
 
 </body>
 </html>
+
