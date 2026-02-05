@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Login</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+  window.dataLayer = window.dataLayer || [];
+</script>
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#fff;
+}
+
+.container {
+  max-width:420px;
+  margin:80px auto;
+}
+
+h2 {
+  text-align:center;
+  font-weight:500;
+}
+
+.underline {
+  width:40px;
+  height:3px;
+  background:#f5c400;
+  margin:8px auto 30px;
+}
+
+label {
+  font-size:14px;
+  display:block;
+  margin-bottom:6px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  margin-bottom:20px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+input:focus {
+  outline:none;
+  border:2px solid #000;
+}
+
+.actions {
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+button {
+  background:#f5c400;
+  border:none;
+  padding:12px 24px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.link {
+  font-size:13px;
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Login</h2>
+  <div class="underline"></div>
+
+  <label>Email</label>
+  <input id="email" type="email">
+
+  <label>Password</label>
+  <input id="password" type="password">
+
+  <div class="actions">
+    <button onclick="login()">SIGN IN</button>
+    <span class="link" onclick="signup()">CREATE ACCOUNT</span>
+  </div>
+</div>
+
+<script>
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users") || "[]");
+}
+
+function login() {
+  dataLayer.push({ event:"login_initiated" });
+
+  const email = email.value;
+  const pass = password.value;
+  const users = getUsers();
+
+  const valid = users.find(u => u.email===email && u.pass===pass);
+
+  if (!valid) {
+    dataLayer.push({ event:"login_failed" });
+    alert("Invalid credentials");
+    return;
+  }
+
+  localStorage.setItem("loggedInUser", email);
+  dataLayer.push({ event:"login_success" });
+
+  window.location.href = "index.html";
+}
+
+function signup() {
+  const email = document.getElementById("email").value;
+  const pass = document.getElementById("password").value;
+
+  if (!email || !pass) return alert("Fill all fields");
+
+  const users = getUsers();
+  users.push({ email, pass });
+  localStorage.setItem("users", JSON.stringify(users));
+
+  dataLayer.push({ event:"signup_success" });
+  alert("Account created. Now login.");
+}
+</script>
+
+</body>
+</html>
