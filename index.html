@@ -27,8 +27,9 @@
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+  <!-- End GTM -->
 
-  <!-- ================= DIGITAL DATA ================= -->
+  <!-- ================= DIGITAL DATA (ADOBE) ================= -->
   <script>
     window.digitalData = {
       page: {
@@ -37,10 +38,16 @@
           pageType: "homepage",
           language: "en-US",
           siteSection: "homepage",
-          siteName: "ShopEase"
+          siteName: "ShopEase",
+          environment: "development"
         }
       },
       user: {},
+      cart: {
+        cartID: null,
+        cartTotal: 0,
+        cartItems: 0
+      },
       event: []
     };
 
@@ -48,13 +55,17 @@
       const originalPush = window.digitalData.event.push;
       window.digitalData.event.push = function () {
         const result = originalPush.apply(this, arguments);
-        window.dispatchEvent(new CustomEvent("digitalDataEventPushed", {
+        const customEvent = new CustomEvent("digitalDataEventPushed", {
           detail: arguments[0]
-        }));
+        });
+        window.dispatchEvent(customEvent);
         return result;
       };
     })();
   </script>
+
+  <!-- ================= ADOBE LAUNCH ================= -->
+  <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
@@ -66,45 +77,51 @@
       padding: 1rem;
       display: flex;
       justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav ul { display: flex; list-style: none; }
+    nav ul li { margin-left: 1.5rem; }
+    nav a { color: white; text-decoration: none; font-weight: 500; }
+    nav a:hover { color: #4CAF50; }
+
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+      url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 6rem 2rem;
+      text-align: center;
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
       align-items: center;
     }
 
-    nav ul { display: flex; list-style: none; align-items: center; }
-    nav ul li { margin-left: 1.2rem; }
-    nav a, .auth-btn { color: white; text-decoration: none; cursor: pointer; }
+    .hero h2 { font-size: 3rem; margin-bottom: 1rem; }
+    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
 
-    .hero { padding: 6rem 2rem; text-align: center; background:#222; color:white; }
+    .hero button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
 
-    /* ===== AUTH MODAL ===== */
-    .modal {
-      display:none;
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,0.6);
-      justify-content:center;
-      align-items:center;
-      z-index:999;
-    }
-    .modal-content {
-      background:white;
-      padding:2rem;
-      width:300px;
-      border-radius:6px;
-      text-align:center;
-    }
-    .modal input {
-      width:100%;
-      padding:8px;
-      margin:8px 0;
-    }
-    .modal button {
-      width:100%;
-      padding:10px;
-      background:#4CAF50;
-      color:white;
-      border:none;
-      margin-top:10px;
-      cursor:pointer;
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
     }
   </style>
 </head>
@@ -117,13 +134,7 @@
     <ul>
       <li><a href="index.html">Home</a></li>
       <li><a href="products.html">Shop</a></li>
-      <li><a href="checkout.html" id="cart-link">Cart (0)</a></li>
-
-      <!-- ✅ AUTH BUTTONS -->
-      <li id="auth-area">
-        <span class="auth-btn" onclick="openModal('login')">Sign In</span> |
-        <span class="auth-btn" onclick="openModal('signup')">Sign Up</span>
-      </li>
+      <li><a href="checkout.html">Cart (0)</a></li>
     </ul>
   </nav>
 </header>
@@ -131,96 +142,154 @@
 <section class="hero">
   <h2>Welcome to ShopEase</h2>
   <p>Discover amazing products at great prices</p>
+  <button id="cta-shop-now">Shop Now</button>
+  <button id="cta-learn-more">Learn More</button>
+  <button id="cta-featured-sale">Check Sale</button>
 </section>
 
-<!-- ================= LOGIN MODAL ================= -->
-<div class="modal" id="loginModal">
-  <div class="modal-content">
-    <h3>Sign In</h3>
-    <input id="loginEmail" placeholder="Email">
-    <input id="loginPassword" type="password" placeholder="Password">
-    <button onclick="login()">Login</button>
-  </div>
-</div>
-
-<!-- ================= SIGNUP MODAL ================= -->
-<div class="modal" id="signupModal">
-  <div class="modal-content">
-    <h3>Sign Up</h3>
-    <input id="signupName" placeholder="Name">
-    <input id="signupEmail" placeholder="Email">
-    <input id="signupPassword" type="password" placeholder="Password">
-    <button onclick="signup()">Create Account</button>
-  </div>
-</div>
+<footer>
+  <p>&copy; 2023 ShopEase. All rights reserved.</p>
+</footer>
 
 <script>
-  /* ================= AUTH LOGIC ================= */
-  function openModal(type){
-    document.getElementById(type+"Modal").style.display="flex";
+  /* ================= CART COUNT ================= */
+  const cartCount = localStorage.getItem("cartCount") || 0;
+  document.querySelector("nav ul li:last-child a").textContent = `Cart (${cartCount})`;
 
-    dataLayer.push({ event: type+"_start" });
-    digitalData.event.push({ eventInfo:{ eventName:type+"_start" }});
-  }
-
-  function closeModals(){
-    document.querySelectorAll(".modal").forEach(m=>m.style.display="none");
-  }
-
-  function signup(){
-    const user={
-      name:signupName.value,
-      email:signupEmail.value
-    };
-    localStorage.setItem("loggedInUser",JSON.stringify(user));
-    authSuccess("signup",user);
-  }
-
-  function login(){
-    const user={
-      name:loginEmail.value.split("@")[0],
-      email:loginEmail.value
-    };
-    localStorage.setItem("loggedInUser",JSON.stringify(user));
-    authSuccess("login",user);
-  }
-
-  function authSuccess(type,user){
-    closeModals();
-    updateHeader();
-
-    dataLayer.push({ event:type+"_success", userEmail:user.email });
+  /* ================= CTA TRACKING ================= */
+  function trackButtonClick(label, componentName) {
     digitalData.event.push({
-      eventInfo:{ eventName:type+"_success" },
-      user:{ userInfo:user }
+      eventInfo: {
+        eventName: "ctaClick",
+        eventAction: "click",
+        event: label,
+        timestamp: new Date().toISOString()
+      },
+      component: {
+        componentName: componentName,
+        componentType: "CTA Button"
+      }
     });
   }
 
-  function logout(){
+  document.querySelectorAll("button").forEach(btn => {
+    btn.addEventListener("click", function () {
+      trackButtonClick(this.innerText.trim(), this.id);
+
+      if (this.id === "cta-shop-now") {
+        setTimeout(() => {
+          window.location.href = "products.html";
+        }, 300);
+      }
+    });
+  });
+
+  /* ================= GTM BUTTON CLICK ================= */
+  document.addEventListener("click", function (e) {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+
+    dataLayer.push({
+      event: "buttonClick",
+      buttonText: btn.innerText.trim(),
+      buttonId: btn.id || "no-id",
+      pageName: "ShopEase:Home"
+    });
+  });
+
+  /* ================= GTM LINK CLICK ================= */
+  document.addEventListener("click", function (e) {
+    const link = e.target.closest("a");
+    if (!link) return;
+
+    dataLayer.push({
+      event: "linkClick",
+      linkText: link.innerText.trim(),
+      linkUrl: link.getAttribute("href"),
+      pageName: "ShopEase:Home"
+    });
+  });
+</script>
+
+<!-- ===================================================== -->
+<!-- ============ LOGIN / LOGOUT TRACKING ONLY ============ -->
+<!-- ===================================================== -->
+<script>
+  /* -------- LOGIN INITIATED -------- */
+  function loginInitiated(method = "email") {
+    dataLayer.push({
+      event: "login_initiated",
+      loginMethod: method,
+      pageName: "ShopEase:Home"
+    });
+
+    digitalData.event.push({
+      eventInfo: {
+        eventName: "login_initiated"
+      },
+      user: {
+        loginMethod: method
+      }
+    });
+  }
+
+  /* -------- LOGIN SUCCESS -------- */
+  function loginSuccess(userEmail) {
+    localStorage.setItem("loggedInUser", JSON.stringify({ email: userEmail }));
+
+    dataLayer.push({
+      event: "login_success",
+      userEmail: userEmail,
+      pageName: "ShopEase:Home"
+    });
+
+    digitalData.event.push({
+      eventInfo: {
+        eventName: "login_success"
+      },
+      user: {
+        userInfo: {
+          email: userEmail,
+          loginStatus: "logged_in"
+        }
+      }
+    });
+  }
+
+  /* -------- LOGIN FAILED -------- */
+  function loginFailed(reason) {
+    dataLayer.push({
+      event: "login_failed",
+      errorMessage: reason,
+      pageName: "ShopEase:Home"
+    });
+
+    digitalData.event.push({
+      eventInfo: {
+        eventName: "login_failed"
+      },
+      error: {
+        errorMessage: reason
+      }
+    });
+  }
+
+  /* -------- LOGOUT (FIXED) -------- */
+  function logout() {
     localStorage.removeItem("loggedInUser");
-    updateHeader();
 
-    dataLayer.push({ event:"logout" });
-    digitalData.event.push({ eventInfo:{ eventName:"logout" }});
-  }
+    dataLayer.push({
+      event: "logout",
+      pageName: "ShopEase:Home"
+    });
 
-  function updateHeader(){
-    const user=JSON.parse(localStorage.getItem("loggedInUser"));
-    const authArea=document.getElementById("auth-area");
+    digitalData.event.push({
+      eventInfo: {
+        eventName: "logout"
+      }
+    });
 
-    if(user){
-      authArea.innerHTML=`Hi ${user.name} | <span class="auth-btn" onclick="logout()">Logout</span>`;
-    }
-  }
-
-  updateHeader();
-
-  /* ================= CART COUNT ================= */
-  const cartCount = localStorage.getItem("cartCount") || 0;
-  document.getElementById("cart-link").textContent = `Cart (${cartCount})`;
-
-  window.onclick=e=>{
-    if(e.target.classList.contains("modal")) closeModals();
+    location.reload();
   }
 </script>
 
