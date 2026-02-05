@@ -10,18 +10,69 @@
 </script>
 
 <style>
-body { font-family: Arial, sans-serif; background:#fff; }
-.container { max-width:420px; margin:80px auto; }
-h2 { text-align:center; }
-.underline { width:40px; height:3px; background:#f5c400; margin:8px auto 30px; }
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  background:#fff;
+}
 
-label { font-size:14px; display:block; margin-bottom:6px; }
-input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
-input:focus { outline:none; border:2px solid #000; }
+.container {
+  max-width:420px;
+  margin:80px auto;
+}
 
-.actions { display:flex; align-items:center; gap:20px; }
-button { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; cursor:pointer; }
-.link { font-size:13px; cursor:pointer; }
+h2 {
+  text-align:center;
+  font-weight:500;
+}
+
+.underline {
+  width:40px;
+  height:3px;
+  background:#f5c400;
+  margin:8px auto 30px;
+}
+
+label {
+  font-size:14px;
+  display:block;
+  margin-bottom:6px;
+}
+
+input {
+  width:100%;
+  padding:12px;
+  margin-bottom:20px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+
+input:focus {
+  outline:none;
+  border:2px solid #000;
+}
+
+.actions {
+  display:flex;
+  align-items:center;
+  gap:20px;
+}
+
+.primary-btn {
+  background:#f5c400;
+  border:none;
+  padding:12px 24px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.link-btn {
+  background:none;
+  border:none;
+  padding:0;
+  font-size:13px;
+  cursor:pointer;
+}
 </style>
 </head>
 
@@ -37,21 +88,27 @@ button { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; c
   <label>Password</label>
   <input id="password" type="password">
 
-  <!-- Signup only -->
+  <!-- Signup only field -->
   <div id="signupField" style="display:none">
     <label>Confirm Password</label>
     <input id="confirmPassword" type="password">
   </div>
 
   <div class="actions">
-    <button onclick="submit()" id="submitBtn">SIGN IN</button>
-    <span class="link" onclick="toggleMode()" id="toggleText">CREATE ACCOUNT</span>
+    <button class="primary-btn" onclick="submitForm()" id="submitBtn">
+      SIGN IN
+    </button>
+
+    <button class="link-btn" onclick="toggleMode()" id="toggleBtn">
+      CREATE ACCOUNT
+    </button>
   </div>
 </div>
 
 <script>
 let mode = "login";
 
+/* ================= TOGGLE LOGIN / SIGNUP ================= */
 function toggleMode() {
   mode = mode === "login" ? "signup" : "login";
 
@@ -61,50 +118,63 @@ function toggleMode() {
   document.getElementById("submitBtn").innerText =
     mode === "login" ? "SIGN IN" : "SIGN UP";
 
-  document.getElementById("toggleText").innerText =
+  document.getElementById("toggleBtn").innerText =
     mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
 
   document.getElementById("signupField").style.display =
     mode === "signup" ? "block" : "none";
 }
 
+/* ================= STORAGE HELPERS ================= */
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
-function submit() {
-  const email = email.value;
-  const pass = password.value;
+/* ================= LOGIN / SIGNUP SUBMIT ================= */
+function submitForm() {
+  const emailVal = document.getElementById("email").value.trim();
+  const passVal = document.getElementById("password").value.trim();
 
-  dataLayer.push({ event:"login_initiated" });
+  dataLayer.push({ event: "login_initiated" });
+
+  if (!emailVal || !passVal) {
+    dataLayer.push({ event: "login_failed" });
+    alert("Please fill all fields");
+    return;
+  }
 
   if (mode === "signup") {
-    const confirm = confirmPassword.value;
+    const confirmVal = document.getElementById("confirmPassword").value.trim();
 
-    if (pass !== confirm) {
-      dataLayer.push({ event:"login_failed" });
-      return alert("Passwords do not match");
+    if (passVal !== confirmVal) {
+      dataLayer.push({ event: "login_failed" });
+      alert("Passwords do not match");
+      return;
     }
 
     const users = getUsers();
-    users.push({ email, pass });
+    users.push({ email: emailVal, pass: passVal });
     localStorage.setItem("users", JSON.stringify(users));
 
-    localStorage.setItem("loggedInUser", email);
-    dataLayer.push({ event:"signup_success" });
+    localStorage.setItem("loggedInUser", emailVal);
+    dataLayer.push({ event: "signup_success" });
 
     window.location.href = "index.html";
-  } else {
+  } 
+  else {
     const users = getUsers();
-    const valid = users.find(u => u.email === email && u.pass === pass);
+    const validUser = users.find(
+      u => u.email === emailVal && u.pass === passVal
+    );
 
-    if (!valid) {
-      dataLayer.push({ event:"login_failed" });
-      return alert("Invalid credentials");
+    if (!validUser) {
+      dataLayer.push({ event: "login_failed" });
+      alert("Invalid email or password");
+      return;
     }
 
-    localStorage.setItem("loggedInUser", email);
-    dataLayer.push({ event:"login_success" });
+    localStorage.setItem("loggedInUser", emailVal);
+    dataLayer.push({ event: "login_success" });
 
     window.location.href = "index.html";
   }
