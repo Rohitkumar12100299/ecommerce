@@ -10,7 +10,7 @@
   window.dataLayer = window.dataLayer || [];
 </script>
 
-<!-- ================= PAGE VIEW (LOGIN PAGE) ================= -->
+<!-- ================= PAGE VIEW ================= -->
 <script>
   dataLayer.push({
     event: "pageView",
@@ -21,69 +21,24 @@
   });
 </script>
 
-<!-- Google Tag Manager -->
+<!-- GTM -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-<!-- End Google Tag Manager -->
 
 <style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#fff;
-}
-.container {
-  max-width:420px;
-  margin:80px auto;
-}
-h2 {
-  text-align:center;
-  font-weight:500;
-}
-.underline {
-  width:40px;
-  height:3px;
-  background:#f5c400;
-  margin:8px auto 30px;
-}
-label {
-  font-size:14px;
-  display:block;
-  margin-bottom:6px;
-}
-input {
-  width:100%;
-  padding:12px;
-  margin-bottom:20px;
-  border:1px solid #ddd;
-  font-size:14px;
-}
-input:focus {
-  outline:none;
-  border:2px solid #000;
-}
-.actions {
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-.primary-btn {
-  background:#f5c400;
-  border:none;
-  padding:12px 24px;
-  font-weight:bold;
-  cursor:pointer;
-}
-.link-btn {
-  background:none;
-  border:none;
-  padding:0;
-  font-size:13px;
-  cursor:pointer;
-}
+body { margin:0; font-family: Arial, sans-serif; background:#fff; }
+.container { max-width:420px; margin:80px auto; }
+h2 { text-align:center; font-weight:500; }
+.underline { width:40px; height:3px; background:#f5c400; margin:8px auto 30px; }
+label { font-size:14px; display:block; margin-bottom:6px; }
+input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
+input:focus { outline:none; border:2px solid #000; }
+.actions { display:flex; align-items:center; gap:20px; }
+.primary-btn { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; cursor:pointer; }
+.link-btn { background:none; border:none; padding:0; font-size:13px; cursor:pointer; }
 </style>
 </head>
 
@@ -105,11 +60,12 @@ input:focus {
   </div>
 
   <div class="actions">
-    <button class="primary-btn" onclick="submitForm()" id="cta-login-submit">
+    <!-- ❗ IDs UNCHANGED -->
+    <button class="primary-btn" onclick="submitForm()" id="submitBtn">
       SIGN IN
     </button>
 
-    <button class="link-btn" onclick="toggleMode()" id="cta-login-toggle">
+    <button class="link-btn" onclick="toggleMode()" id="toggleBtn">
       CREATE ACCOUNT
     </button>
   </div>
@@ -118,32 +74,32 @@ input:focus {
 <script>
 let mode = "login";
 
-/* ================= TOGGLE LOGIN / SIGNUP ================= */
+/* ================= TOGGLE ================= */
 function toggleMode() {
   mode = mode === "login" ? "signup" : "login";
 
   document.getElementById("title").innerText =
     mode === "login" ? "Login" : "Create Account";
 
-  document.getElementById("submitBtn")?.innerText =
+  document.getElementById("submitBtn").innerText =
     mode === "login" ? "SIGN IN" : "SIGN UP";
 
-  document.getElementById("toggleBtn")?.innerText =
+  document.getElementById("toggleBtn").innerText =
     mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
 
   document.getElementById("signupField").style.display =
     mode === "signup" ? "block" : "none";
 }
 
-/* ================= STORAGE HELPERS ================= */
+/* ================= HELPERS ================= */
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
-/* ================= LOGIN / SIGNUP SUBMIT ================= */
+/* ================= SUBMIT ================= */
 function submitForm() {
-  const emailVal = document.getElementById("email").value.trim();
-  const passVal = document.getElementById("password").value.trim();
+  const emailVal = email.value.trim();
+  const passVal = password.value.trim();
 
   dataLayer.push({ event: "login_initiated" });
 
@@ -157,9 +113,7 @@ function submitForm() {
   }
 
   if (mode === "signup") {
-    const confirmVal = document.getElementById("confirmPassword").value.trim();
-
-    if (passVal !== confirmVal) {
+    if (passVal !== confirmPassword.value.trim()) {
       dataLayer.push({
         event: "login_failed",
         password_verification: "failed"
@@ -174,21 +128,15 @@ function submitForm() {
 
     localStorage.setItem("loggedInUser", emailVal);
     dataLayer.push({ event: "signup_success" });
-
     window.location.href = "index.html";
-  } 
-  else {
-    const users = getUsers();
-    const validUser = users.find(
-      u => u.email === emailVal && u.pass === passVal
-    );
-
-    if (!validUser) {
+  } else {
+    const user = getUsers().find(u => u.email === emailVal && u.pass === passVal);
+    if (!user) {
       dataLayer.push({
         event: "login_failed",
         password_verification: "failed"
       });
-      alert("Invalid email or password");
+      alert("Invalid credentials");
       return;
     }
 
@@ -197,12 +145,11 @@ function submitForm() {
       event: "login_success",
       password_verification: "success"
     });
-
     window.location.href = "index.html";
   }
 }
 
-/* ================= CTA BUTTON CLICK TRACKING ================= */
+/* ================= CTA CLICK TRACKING ================= */
 document.addEventListener("click", function (e) {
   const btn = e.target.closest("button");
   if (!btn) return;
