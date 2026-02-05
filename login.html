@@ -74,14 +74,13 @@ input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
 let mode = "login";
 
 /* =====================================================
-   STORE BUTTON TEXT BEFORE toggleMode() CHANGES IT
+   STORE BUTTON TEXT BEFORE UI CHANGES
    ===================================================== */
 document.addEventListener("click", function(e){
   const btn = e.target.closest("button");
   if(!btn) return;
-
   btn.setAttribute("data-original-text", btn.innerText.trim());
-}, true); // capture phase (important)
+}, true);
 
 /* ================= CTA CLICK TRACKING ================= */
 document.addEventListener("click", function(e){
@@ -92,7 +91,8 @@ document.addEventListener("click", function(e){
     event: "buttonClick",
     buttonId: btn.id || "na",
     buttonText: btn.getAttribute("data-original-text") || btn.innerText.trim(),
-    buttonIntent: btn.getAttribute("data-cta-intent") || "na"
+    buttonIntent: btn.getAttribute("data-cta-intent") || "na",
+    authMode: mode
   });
 });
 
@@ -120,57 +120,59 @@ function getUsers() {
 
 /* ================= SUBMIT ================= */
 function submitForm() {
-  const email = email.value.trim();
-  const pass = password.value.trim();
+  const emailVal = document.getElementById("email").value.trim();
+  const passVal = document.getElementById("password").value.trim();
 
-  dataLayer.push({ event: "login_initiated" });
+  dataLayer.push({
+    event: "login_initiated",
+    authMode: mode
+  });
 
-  if (!email || !pass) {
+  if (!emailVal || !passVal) {
     dataLayer.push({
       event: "login_failed",
-      password_verification: "failed"
+      reason: "missing_fields"
     });
     alert("Please fill all fields");
     return;
   }
 
   if (mode === "signup") {
-    const confirm = confirmPassword.value.trim();
+    const confirmVal = document.getElementById("confirmPassword").value.trim();
 
-    if (pass !== confirm) {
+    if (passVal !== confirmVal) {
       dataLayer.push({
         event: "login_failed",
-        password_verification: "failed"
+        reason: "password_mismatch"
       });
       alert("Passwords do not match");
       return;
     }
 
     const users = getUsers();
-    users.push({ email, pass });
+    users.push({ email: emailVal, pass: passVal });
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", email);
+    localStorage.setItem("loggedInUser", emailVal);
 
     dataLayer.push({ event: "signup_success" });
     window.location.href = "index.html";
   } 
   else {
     const users = getUsers();
-    const valid = users.find(u => u.email === email && u.pass === pass);
+    const valid = users.find(u => u.email === emailVal && u.pass === passVal);
 
     if (!valid) {
       dataLayer.push({
         event: "login_failed",
-        password_verification: "failed"
+        reason: "invalid_credentials"
       });
       alert("Invalid credentials");
       return;
     }
 
-    localStorage.setItem("loggedInUser", email);
+    localStorage.setItem("loggedInUser", emailVal);
     dataLayer.push({
-      event: "login_success",
-      password_verification: "success"
+      event: "login_success"
     });
     window.location.href = "index.html";
   }
