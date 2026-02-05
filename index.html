@@ -74,12 +74,15 @@
       <li><a href="#">Home</a></li>
       <li><a href="#">Shop</a></li>
 
-      <!-- AUTH BUTTONS -->
-      <li id="signupBtn"><a href="javascript:void(0)" onclick="openSignup()">Sign Up</a></li>
-      <li id="loginBtn"><a href="javascript:void(0)" onclick="openLogin()">Login</a></li>
-      <li id="logoutBtn" style="display:none">
-        <a href="javascript:void(0)" onclick="logout()">Logout</a>
-      </li>
+      <!-- HEADER AUTH BUTTON -->
+<li id="authBtn">
+  <a href="login.html">Sign In / Sign Up</a>
+</li>
+
+<li id="logoutBtn" style="display:none">
+  <a href="javascript:void(0)" onclick="logout()">Logout</a>
+</li>
+
     </ul>
   </nav>
 </header>
@@ -179,13 +182,21 @@ function login() {
 }
 
 /* ---------- LOGOUT ---------- */
+<script>
 function logout() {
   localStorage.removeItem("loggedInUser");
-
   dataLayer.push({ event:"logout" });
-  digitalData.event.push({ eventInfo:{ eventName:"logout" }});
+  window.location.reload();
+}
 
-  updateAuthUI();
+(function () {
+  if (localStorage.getItem("loggedInUser")) {
+    document.getElementById("authBtn").style.display = "none";
+    document.getElementById("logoutBtn").style.display = "block";
+  }
+})();
+</script>
+
 }
 </script>
 
