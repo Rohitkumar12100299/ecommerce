@@ -73,6 +73,16 @@ input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
 <script>
 let mode = "login";
 
+/* =====================================================
+   STORE BUTTON TEXT BEFORE toggleMode() CHANGES IT
+   ===================================================== */
+document.addEventListener("click", function(e){
+  const btn = e.target.closest("button");
+  if(!btn) return;
+
+  btn.setAttribute("data-original-text", btn.innerText.trim());
+}, true); // capture phase (important)
+
 /* ================= CTA CLICK TRACKING ================= */
 document.addEventListener("click", function(e){
   const btn = e.target.closest("button");
@@ -81,7 +91,7 @@ document.addEventListener("click", function(e){
   dataLayer.push({
     event: "buttonClick",
     buttonId: btn.id || "na",
-    buttonText: btn.innerText.trim(),
+    buttonText: btn.getAttribute("data-original-text") || btn.innerText.trim(),
     buttonIntent: btn.getAttribute("data-cta-intent") || "na"
   });
 });
