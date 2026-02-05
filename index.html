@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>ShopEase - Home</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ShopEase - Home</title>
 
-<script>
-  window.dataLayer = window.dataLayer || [];
-  dataLayer.push({ event:"pageView", pageName:"ShopEase:Home" });
-</script>
+  <!-- ================= GTM DATA LAYER ================= -->
+  <script>
+    window.dataLayer = window.dataLayer || [];
+  </script>
 
-<script>
-  window.digitalData = {
-    page:{ pageInfo:{ pageName:"ShopEase:Home" }},
-    event:[]
-  };
-</script>
+  <!-- ================= PAGE LOAD EVENT ================= -->
+  <script>
+    dataLayer.push({
+      event: "pageView",
+      pageName: "ShopEase:Home",
+      pageType: "homepage",
+      siteName: "ShopEase",
+      language: "en-US"
+    });
+  </script>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial}
-body{background:#f9f9f9}
+  <!-- ================= DIGITAL DATA (ADOBE) ================= -->
+  <script>
+    window.digitalData = {
+      page: {
+        pageInfo: {
+          pageName: "ShopEase:Home",
+          pageType: "homepage",
+          language: "en-US",
+          siteSection: "homepage",
+          siteName: "ShopEase",
+          environment: "development"
+        }
+      },
+      event: []
+    };
 
-header{
-  background:rgba(51,51,51,.9);
-  color:white;
-  padding:1rem;
-  display:flex;
-  justify-content:space-between;
-}
+    (function () {
+      const originalPush = window.digitalData.event.push;
+      window.digitalData.event.push = function () {
+        const result = originalPush.apply(this, arguments);
+        const customEvent = new CustomEvent("digitalDataEventPushed", {
+          detail: arguments[0]
+        });
+        window.dispatchEvent(customEvent);
+        return result;
+      };
+    })();
+  </script>
 
-nav ul{list-style:none;display:flex}
-nav li{margin-left:1.5rem}
-nav a{color:white;text-decoration:none}
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { background-color: #f9f9f9; }
 
-.hero{
-  background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),
-  url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
-  background-size:cover;
-  height:60vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
-}
-</style>
+    header {
+      background: rgba(51, 51, 51, 0.9);
+      color: white;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav ul { display: flex; list-style: none; }
+    nav ul li { margin-left: 1.5rem; }
+    nav a { color: white; text-decoration: none; font-weight: 500; }
+
+    .hero {
+      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+      url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
+      background-size: cover;
+      background-position: center;
+      color: white;
+      padding: 6rem 2rem;
+      text-align: center;
+      height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* 🔹 ADD: button styling (same theme, no existing change) */
+    .hero button {
+      background: #4CAF50;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      font-size: 1.1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+  </style>
 </head>
 
 <body>
@@ -53,8 +105,6 @@ nav a{color:white;text-decoration:none}
   <nav>
     <ul>
       <li><a href="index.html">Home</a></li>
-
-      <!-- ✅ FIX: Shop now redirects to PLP -->
       <li><a href="products.html">Shop</a></li>
 
       <li id="authBtn">
@@ -62,7 +112,7 @@ nav a{color:white;text-decoration:none}
       </li>
 
       <li id="logoutBtn" style="display:none">
-        <a href="#" onclick="logout()">Logout</a>
+        <a href="javascript:void(0)" onclick="logout()">Logout</a>
       </li>
     </ul>
   </nav>
@@ -70,10 +120,13 @@ nav a{color:white;text-decoration:none}
 
 <section class="hero">
   <h2>Welcome to ShopEase</h2>
+
+  <!-- 🔹 ADD: NEW HOME PAGE BUTTON -->
+  <button id="cta-home-extra">Explore Collections</button>
 </section>
 
 <script>
-/* ---------- AUTH UI ---------- */
+/* ================= AUTH UI (unchanged logic) ================= */
 (function () {
   if (localStorage.getItem("loggedInUser")) {
     document.getElementById("authBtn").style.display = "none";
@@ -81,17 +134,30 @@ nav a{color:white;text-decoration:none}
   }
 })();
 
-/* ---------- LOGOUT ---------- */
+/* ================= LOGOUT ================= */
 function logout() {
   localStorage.removeItem("loggedInUser");
 
-  dataLayer.push({ event:"logout" });
+  dataLayer.push({ event: "logout" });
   digitalData.event.push({
-    eventInfo:{ eventName:"logout" }
+    eventInfo: { eventName: "logout" }
   });
 
   window.location.reload();
 }
+
+/* 🔹 ADD: GTM BUTTON CLICK EVENT (HOME PAGE ONLY) */
+document.getElementById("cta-home-extra").addEventListener("click", function () {
+  dataLayer.push({
+    event: "buttonClick",
+    buttonText: "Explore Collections",
+    buttonId: "cta-home-extra"
+   
+  });
+
+  // optional navigation
+  window.location.href = "products.html";
+});
 </script>
 
 </body>
