@@ -5,93 +5,63 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ShopEase - Home</title>
 
-  <!-- ================= GTM DATA LAYER ================= -->
+  <!-- GTM -->
   <script>
     window.dataLayer = window.dataLayer || [];
   </script>
 
-  <!-- ================= PAGE LOAD EVENT ================= -->
   <script>
     dataLayer.push({
       event: "pageView",
-      pageName: "ShopEase:Home",
-      pageType: "homepage",
-      siteName: "ShopEase",
-      language: "en-US"
+      pageName: "ShopEase:Home"
     });
   </script>
 
-  <!-- Google Tag Manager -->
-  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-
-  <!-- ================= DIGITAL DATA ================= -->
+  <!-- DIGITAL DATA -->
   <script>
     window.digitalData = {
-      page: {
-        pageInfo: {
-          pageName: "ShopEase:Home",
-          pageType: "homepage",
-          language: "en-US",
-          siteSection: "homepage",
-          siteName: "ShopEase"
-        }
-      },
-      user: {},
+      page: { pageInfo: { pageName: "ShopEase:Home" } },
       event: []
     };
 
     (function () {
-      const originalPush = window.digitalData.event.push;
-      window.digitalData.event.push = function () {
-        const result = originalPush.apply(this, arguments);
+      const p = digitalData.event.push;
+      digitalData.event.push = function () {
+        p.apply(this, arguments);
         window.dispatchEvent(new CustomEvent("digitalDataEventPushed", {
           detail: arguments[0]
         }));
-        return result;
       };
     })();
   </script>
 
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
-    body { background-color: #f9f9f9; }
+    * { box-sizing: border-box; margin:0; padding:0; font-family:Arial }
+    body { background:#f9f9f9 }
 
     header {
-      background: rgba(51, 51, 51, 0.9);
-      color: white;
-      padding: 1rem;
-      display: flex;
-      justify-content: space-between;
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      background: rgba(51,51,51,.9);
+      color:#fff;
+      padding:1rem;
+      display:flex;
+      justify-content:space-between;
     }
 
-    nav ul { display: flex; list-style: none; }
-    nav ul li { margin-left: 1.5rem; }
-    nav a { color: white; text-decoration: none; }
+    nav ul { list-style:none; display:flex }
+    nav li { margin-left:1.5rem }
+    nav a { color:white; text-decoration:none }
 
     .hero {
-      background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
+      background:linear-gradient(rgba(0,0,0,.5),rgba(0,0,0,.5)),
       url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
-      background-size: cover;
-      background-position: center;
-      color: white;
-      padding: 6rem 2rem;
-      text-align: center;
-      height: 60vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      background-size:cover;
+      height:60vh;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+      color:white;
     }
-
-    .hero h2 { font-size: 3rem; margin-bottom: 1rem; }
-    .hero p { font-size: 1.2rem; margin-bottom: 2rem; }
   </style>
 </head>
 
@@ -101,109 +71,121 @@
   <h1>Rohit Ki Dukan</h1>
   <nav>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="products.html">Shop</a></li>
-      <li><a href="checkout.html">Cart (0)</a></li>
+      <li><a href="#">Home</a></li>
+      <li><a href="#">Shop</a></li>
 
-      <!-- ✅ LOGIN / LOGOUT BUTTON -->
-      <li><a href="javascript:void(0)" onclick="openLogin()">Login</a></li>
-      <li><a href="javascript:void(0)" onclick="logout()">Logout</a></li>
+      <!-- AUTH BUTTONS -->
+      <li id="signupBtn"><a href="javascript:void(0)" onclick="openSignup()">Sign Up</a></li>
+      <li id="loginBtn"><a href="javascript:void(0)" onclick="openLogin()">Login</a></li>
+      <li id="logoutBtn" style="display:none">
+        <a href="javascript:void(0)" onclick="logout()">Logout</a>
+      </li>
     </ul>
   </nav>
 </header>
 
 <section class="hero">
   <h2>Welcome to ShopEase</h2>
-  <p>Discover amazing products at great prices</p>
 </section>
 
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center">
+  <div style="background:#fff;padding:20px;width:300px">
+    <h3>Sign Up</h3>
+    <input id="suEmail" placeholder="Email" style="width:100%;margin:6px 0">
+    <input id="suPass" type="password" placeholder="Password" style="width:100%;margin:6px 0">
+    <button onclick="signup()" style="width:100%">Create Account</button>
+  </div>
+</div>
+
 <!-- ================= LOGIN MODAL ================= -->
-<div id="loginModal" style="
-  display:none;
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,0.6);
-  z-index:999;
-  justify-content:center;
-  align-items:center;
-">
-  <div style="background:#fff;padding:20px;width:300px;border-radius:6px;">
+<div id="loginModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);justify-content:center;align-items:center">
+  <div style="background:#fff;padding:20px;width:300px">
     <h3>Login</h3>
-
-    <input id="loginEmail" type="email" placeholder="Email"
-      style="width:100%;padding:8px;margin:8px 0">
-
-    <input id="loginPassword" type="password" placeholder="Password"
-      style="width:100%;padding:8px;margin:8px 0">
-
-    <button onclick="submitLogin()" style="width:100%;padding:8px">
-      Login
-    </button>
+    <input id="liEmail" placeholder="Email" style="width:100%;margin:6px 0">
+    <input id="liPass" type="password" placeholder="Password" style="width:100%;margin:6px 0">
+    <button onclick="login()" style="width:100%">Login</button>
   </div>
 </div>
 
 <script>
-/* ================= OPEN LOGIN ================= */
-function openLogin() {
-  document.getElementById("loginModal").style.display = "flex";
-
-  dataLayer.push({ event: "login_initiated" });
-  digitalData.event.push({
-    eventInfo: { eventName: "login_initiated" }
-  });
+/* ---------- HELPERS ---------- */
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users") || "[]");
+}
+function saveUsers(u) {
+  localStorage.setItem("users", JSON.stringify(u));
 }
 
-/* ================= SUBMIT LOGIN ================= */
-function submitLogin() {
-  const email = document.getElementById("loginEmail").value;
-  const password = document.getElementById("loginPassword").value;
+/* ---------- UI STATE ---------- */
+function updateAuthUI() {
+  const loggedIn = localStorage.getItem("loggedInUser");
+  signupBtn.style.display = loggedIn ? "none" : "block";
+  loginBtn.style.display = loggedIn ? "none" : "block";
+  logoutBtn.style.display = loggedIn ? "block" : "none";
+}
+updateAuthUI();
 
-  if (!email || !password) {
-    dataLayer.push({
-      event: "login_failed",
-      reason: "missing_credentials"
-    });
+/* ---------- OPEN MODALS ---------- */
+function openSignup() {
+  signupModal.style.display = "flex";
+}
+function openLogin() {
+  loginModal.style.display = "flex";
 
-    digitalData.event.push({
-      eventInfo: { eventName: "login_failed" }
-    });
+  dataLayer.push({ event:"login_initiated" });
+  digitalData.event.push({ eventInfo:{ eventName:"login_initiated" }});
+}
 
-    alert("Email / Password missing");
-    return;
+/* ---------- SIGNUP ---------- */
+function signup() {
+  const email = suEmail.value;
+  const pass = suPass.value;
+
+  if (!email || !pass) return alert("Fill all fields");
+
+  const users = getUsers();
+  users.push({ email, pass });
+  saveUsers(users);
+
+  digitalData.event.push({ eventInfo:{ eventName:"signup_success" }});
+
+  signupModal.style.display="none";
+  alert("Signup successful, now login");
+}
+
+/* ---------- LOGIN ---------- */
+function login() {
+  const email = liEmail.value;
+  const pass = liPass.value;
+  const users = getUsers();
+
+  const valid = users.find(u => u.email===email && u.pass===pass);
+
+  if (!valid) {
+    dataLayer.push({ event:"login_failed" });
+    digitalData.event.push({ eventInfo:{ eventName:"login_failed" }});
+    return alert("Invalid credentials");
   }
 
-  /* FRONTEND SUCCESS */
-  localStorage.setItem("loggedInUser", JSON.stringify({ email }));
+  localStorage.setItem("loggedInUser", email);
 
-  dataLayer.push({
-    event: "login_success",
-    userEmail: email
-  });
+  dataLayer.push({ event:"login_success" });
+  digitalData.event.push({ eventInfo:{ eventName:"login_success" }});
 
-  digitalData.event.push({
-    eventInfo: { eventName: "login_success" },
-    user: {
-      userInfo: {
-        email: email,
-        loginStatus: "logged_in"
-      }
-    }
-  });
-
-  document.getElementById("loginModal").style.display = "none";
-  alert("Login Successful");
+  loginModal.style.display="none";
+  updateAuthUI();
+  alert("Logged in");
 }
 
-/* ================= LOGOUT ================= */
+/* ---------- LOGOUT ---------- */
 function logout() {
   localStorage.removeItem("loggedInUser");
 
-  dataLayer.push({ event: "logout" });
-  digitalData.event.push({
-    eventInfo: { eventName: "logout" }
-  });
+  dataLayer.push({ event:"logout" });
+  digitalData.event.push({ eventInfo:{ eventName:"logout" }});
 
-  alert("Logged out");
+  updateAuthUI();
 }
 </script>
 
