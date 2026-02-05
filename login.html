@@ -5,85 +5,32 @@
 <title>Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- ================= DATA LAYER INIT ================= -->
+<!-- ================= DATA LAYER ================= -->
 <script>
   window.dataLayer = window.dataLayer || [];
 </script>
 
 <!-- ================= PAGE VIEW ================= -->
 <script>
-  dataLayer.push({
-    event: "pageView",
-    pageName: "ShopEase:Login",
-    pageType: "authentication",
-    siteName: "ShopEase",
-    language: "en-US"
-  });
+dataLayer.push({
+  event: "pageView",
+  pageName: "ShopEase:Login",
+  pageType: "authentication",
+  siteName: "ShopEase",
+  language: "en-US"
+});
 </script>
 
-<!-- ================= GTM ================= -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-<!-- ================= END GTM ================= -->
-
 <style>
-body {
-  margin:0;
-  font-family: Arial, sans-serif;
-  background:#fff;
-}
-.container {
-  max-width:420px;
-  margin:80px auto;
-}
-h2 {
-  text-align:center;
-  font-weight:500;
-}
-.underline {
-  width:40px;
-  height:3px;
-  background:#f5c400;
-  margin:8px auto 30px;
-}
-label {
-  font-size:14px;
-  display:block;
-  margin-bottom:6px;
-}
-input {
-  width:100%;
-  padding:12px;
-  margin-bottom:20px;
-  border:1px solid #ddd;
-  font-size:14px;
-}
-input:focus {
-  outline:none;
-  border:2px solid #000;
-}
-.actions {
-  display:flex;
-  align-items:center;
-  gap:20px;
-}
-.primary-btn {
-  background:#f5c400;
-  border:none;
-  padding:12px 24px;
-  font-weight:bold;
-  cursor:pointer;
-}
-.link-btn {
-  background:none;
-  border:none;
-  padding:0;
-  font-size:13px;
-  cursor:pointer;
-}
+body { margin:0; font-family:Arial; background:#fff; }
+.container { max-width:420px; margin:80px auto; }
+h2 { text-align:center; font-weight:500; }
+.underline { width:40px; height:3px; background:#f5c400; margin:8px auto 30px; }
+label { font-size:14px; display:block; margin-bottom:6px; }
+input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
+.actions { display:flex; gap:20px; align-items:center; }
+.primary-btn { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; cursor:pointer; }
+.link-btn { background:none; border:none; padding:0; font-size:13px; cursor:pointer; }
 </style>
 </head>
 
@@ -108,7 +55,7 @@ input:focus {
     <button
       class="primary-btn"
       id="submitBtn"
-      data-cta-label="Sign In"
+      data-cta-intent="submit_login"
       onclick="submitForm()">
       SIGN IN
     </button>
@@ -116,7 +63,7 @@ input:focus {
     <button
       class="link-btn"
       id="toggleBtn"
-      data-cta-label="Create Account"
+      data-cta-intent="create_account"
       onclick="toggleMode()">
       CREATE ACCOUNT
     </button>
@@ -126,31 +73,31 @@ input:focus {
 <script>
 let mode = "login";
 
+/* ================= CTA CLICK TRACKING ================= */
+document.addEventListener("click", function(e){
+  const btn = e.target.closest("button");
+  if(!btn) return;
+
+  dataLayer.push({
+    event: "buttonClick",
+    buttonId: btn.id || "na",
+    buttonText: btn.innerText.trim(),
+    buttonIntent: btn.getAttribute("data-cta-intent") || "na"
+  });
+});
+
 /* ================= TOGGLE LOGIN / SIGNUP ================= */
 function toggleMode() {
   mode = mode === "login" ? "signup" : "login";
 
-  const toggleBtn = document.getElementById("toggleBtn");
-  const submitBtn = document.getElementById("submitBtn");
-
   document.getElementById("title").innerText =
     mode === "login" ? "Login" : "Create Account";
 
-  submitBtn.innerText =
+  document.getElementById("submitBtn").innerText =
     mode === "login" ? "SIGN IN" : "SIGN UP";
 
-  submitBtn.setAttribute(
-    "data-cta-label",
-    mode === "login" ? "Sign In" : "Sign Up"
-  );
-
-  toggleBtn.innerText =
+  document.getElementById("toggleBtn").innerText =
     mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
-
-  toggleBtn.setAttribute(
-    "data-cta-label",
-    mode === "login" ? "Create Account" : "Back to Login"
-  );
 
   document.getElementById("signupField").style.display =
     mode === "signup" ? "block" : "none";
@@ -163,15 +110,12 @@ function getUsers() {
 
 /* ================= SUBMIT ================= */
 function submitForm() {
-  const emailVal = document.getElementById("email").value.trim();
-  const passVal = document.getElementById("password").value.trim();
+  const email = email.value.trim();
+  const pass = password.value.trim();
 
-  dataLayer.push({
-    event: "login_initiated",
-    loginType: mode
-  });
+  dataLayer.push({ event: "login_initiated" });
 
-  if (!emailVal || !passVal) {
+  if (!email || !pass) {
     dataLayer.push({
       event: "login_failed",
       password_verification: "failed"
@@ -181,9 +125,9 @@ function submitForm() {
   }
 
   if (mode === "signup") {
-    const confirmVal = document.getElementById("confirmPassword").value.trim();
+    const confirm = confirmPassword.value.trim();
 
-    if (passVal !== confirmVal) {
+    if (pass !== confirm) {
       dataLayer.push({
         event: "login_failed",
         password_verification: "failed"
@@ -193,53 +137,34 @@ function submitForm() {
     }
 
     const users = getUsers();
-    users.push({ email: emailVal, pass: passVal });
+    users.push({ email, pass });
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", emailVal);
+    localStorage.setItem("loggedInUser", email);
 
-    dataLayer.push({
-      event: "signup_success",
-      password_verification: "success"
-    });
-
+    dataLayer.push({ event: "signup_success" });
     window.location.href = "index.html";
-  } else {
+  } 
+  else {
     const users = getUsers();
-    const validUser = users.find(
-      u => u.email === emailVal && u.pass === passVal
-    );
+    const valid = users.find(u => u.email === email && u.pass === pass);
 
-    if (!validUser) {
+    if (!valid) {
       dataLayer.push({
         event: "login_failed",
         password_verification: "failed"
       });
-      alert("Invalid email or password");
+      alert("Invalid credentials");
       return;
     }
 
-    localStorage.setItem("loggedInUser", emailVal);
-
+    localStorage.setItem("loggedInUser", email);
     dataLayer.push({
       event: "login_success",
       password_verification: "success"
     });
-
     window.location.href = "index.html";
   }
 }
-
-/* ================= CTA CLICK TRACKING ================= */
-document.addEventListener("click", function (e) {
-  const btn = e.target.closest("button");
-  if (!btn) return;
-
-  dataLayer.push({
-    event: "buttonClick",
-    buttonId: btn.id || "no-id",
-    buttonText: btn.getAttribute("data-cta-label") || btn.innerText.trim()
-  });
-});
 </script>
 
 </body>
