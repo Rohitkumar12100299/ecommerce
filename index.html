@@ -178,10 +178,8 @@ document.getElementById("cta-home-extra").addEventListener("click", function () 
   dataLayer.push({
     event: "buttonClick",
     buttonText: "Explore Collections",
-    buttonId: "cta-home-extra",
-    userId: localStorage.getItem("loggedInUser") || null,
-    userType: localStorage.getItem("loggedInUser") ? "registered" : "guest",
-    loginStatus: localStorage.getItem("loggedInUser") ? "logged_in" : "logged_out"
+    buttonId: "cta-home-extra"
+    
   });
 
   window.location.href = "products.html";
