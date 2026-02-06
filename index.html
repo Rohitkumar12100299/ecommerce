@@ -143,9 +143,8 @@ document.querySelectorAll(".header-cta").forEach(function (el) {
     dataLayer.push({
       event: "header_cta_click",
       ctaText: this.innerText.trim(),
-      ctaId: this.getAttribute("data-cta-id"),
-      userId: userId ? userId : null,
-      userType: userId ? "registered" : "guest"
+      ctaId: this.getAttribute("data-cta-id")
+     
     });
   });
 });
