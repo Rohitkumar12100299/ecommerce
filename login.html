@@ -13,7 +13,7 @@
 <!-- ================= PAGE VIEW ================= -->
 <script>
 dataLayer.push({
- 
+  event: "pageView",
   pageName: "ShopEase:Login",
   pageType: "authentication",
   siteName: "ShopEase",
@@ -175,7 +175,12 @@ async function submitForm() {
     localStorage.setItem("users", JSON.stringify(users));
     localStorage.setItem("loggedInUser", encryptedUserId);
 
-    dataLayer.push({ event: "signup_success" });
+    dataLayer.push({
+      event: "login_success",
+      userId: encryptedUserId,
+      userType: "registered",
+      loginStatus: "logged_in"
+    });
 
     dataLayer.push({
       event: "login_initiated",
@@ -202,8 +207,16 @@ async function submitForm() {
     }
 
     localStorage.setItem("loggedInUser", encryptedUserId);
-    dataLayer.push({ event: "login_success" });
 
+    /* ✅ LOGIN SUCCESS WITH USER ID */
+    dataLayer.push({
+      event: "login_success",
+      userId: encryptedUserId,
+      userType: "registered",
+      loginStatus: "logged_in"
+    });
+
+    /* STATE UPDATE */
     dataLayer.push({
       event: "login_initiated",
       userId: encryptedUserId,
