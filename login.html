@@ -11,10 +11,11 @@
 
   /* PAGE LOAD – GUEST */
   dataLayer.push({
-    event: "pageView",
+    event: "page_view",
     pageName: "ShopEase:Login",
     pageType: "authentication",
     userType: "guest",
+    loginStatus: "logged_out",
     userId: null
   });
 </script>
@@ -72,20 +73,17 @@ function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
-function setUsers(users) {
-  localStorage.setItem("users", JSON.stringify(users));
-}
-
 /* ================= SUBMIT ================= */
 async function submitForm() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  /* LOGIN INITIATED */
+  /* LOGIN INITIATED – GUEST */
   dataLayer.push({
     event: "login_initiated",
     authMode: "login",
     userType: "guest",
+    loginStatus: "logged_out",
     userId: null
   });
 
@@ -94,6 +92,7 @@ async function submitForm() {
       event: "login_failed",
       reason: "missing_fields",
       userType: "guest",
+      loginStatus: "logged_out",
       userId: null
     });
     alert("Fill all fields");
@@ -101,27 +100,32 @@ async function submitForm() {
   }
 
   const encryptedUserId = await encryptEmail(email);
-  let users = getUsers();
-
-  /* 🔥 AUTO-CREATE USER IF NOT EXISTS (DEMO FIX) */
-  let validUser = users.find(u => u.email === email && u.pass === password);
+  const users = getUsers();
+  const validUser = users.find(u => u.email === email && u.pass === password);
 
   if (!validUser) {
-    users.push({ email: email, pass: password });
-    setUsers(users);
+    dataLayer.push({
+      event: "login_failed",
+      reason: "invalid_credentials",
+      userType: "guest",
+      loginStatus: "logged_out",
+      userId: null
+    });
+    alert("Invalid credentials");
+    return;
   }
 
-  /* LOGIN SUCCESS */
+  /* LOGIN SUCCESS – USER ID MUST BE HERE ✅ */
   localStorage.setItem("loggedInUser", encryptedUserId);
 
   dataLayer.push({
     event: "login_success",
     userId: encryptedUserId,
-    userType: "registered"
+    userType: "registered",
+    loginStatus: "logged_in"
   });
 
   alert("Login successful");
-  window.location.href = "index.html";
 }
 </script>
 
