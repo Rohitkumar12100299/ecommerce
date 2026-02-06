@@ -9,17 +9,25 @@
   <script>
     window.dataLayer = window.dataLayer || [];
   </script>
-  
 
   <!-- ================= PAGE LOAD EVENT ================= -->
   <script>
-    dataLayer.push({
-      event: "pageView",
-      pageName: "ShopEase:Home",
-      pageType: "homepage",
-      siteName: "ShopEase",
-      language: "en-US"
-    });
+    (function () {
+      const userId = localStorage.getItem("loggedInUser");
+
+      dataLayer.push({
+        
+        pageName: "ShopEase:Home",
+        pageType: "homepage",
+        siteName: "ShopEase",
+        language: "en-US",
+
+        /* ✅ LOGIN STATE */
+        userId: userId ? userId : null,
+        userType: userId ? "registered" : "guest",
+        loginStatus: userId ? "logged_in" : "logged_out"
+      });
+    })();
   </script>
 
   <!-- Google Tag Manager -->
@@ -41,6 +49,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           siteSection: "homepage",
           siteName: "ShopEase",
           environment: "development"
+        }
+      },
+      user: {
+        profile: {
+          userId: localStorage.getItem("loggedInUser") || null,
+          userType: localStorage.getItem("loggedInUser") ? "registered" : "guest",
+          loginStatus: localStorage.getItem("loggedInUser") ? "logged_in" : "logged_out"
         }
       },
       event: []
@@ -93,7 +108,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       align-items: center;
     }
 
-    /* 🔹 ADD: button styling (same theme, no existing change) */
     .hero button {
       background: #4CAF50;
       color: white;
@@ -129,13 +143,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 
 <section class="hero">
   <h2>Welcome to ShopEase</h2>
-
-  <!-- 🔹 ADD: NEW HOME PAGE BUTTON -->
   <button id="cta-home-extra">Explore Collections</button>
 </section>
 
 <script>
-/* ================= AUTH UI (unchanged logic) ================= */
+/* ================= AUTH UI ================= */
 (function () {
   if (localStorage.getItem("loggedInUser")) {
     document.getElementById("authBtn").style.display = "none";
@@ -147,7 +159,13 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 function logout() {
   localStorage.removeItem("loggedInUser");
 
-  dataLayer.push({ event: "logout" });
+  dataLayer.push({
+    event: "logout",
+    userId: null,
+    userType: "guest",
+    loginStatus: "logged_out"
+  });
+
   digitalData.event.push({
     eventInfo: { eventName: "logout" }
   });
@@ -155,16 +173,17 @@ function logout() {
   window.location.reload();
 }
 
-/* 🔹 ADD: GTM BUTTON CLICK EVENT (HOME PAGE ONLY) */
+/* ================= HOME CTA CLICK ================= */
 document.getElementById("cta-home-extra").addEventListener("click", function () {
   dataLayer.push({
     event: "buttonClick",
     buttonText: "Explore Collections",
-    buttonId: "cta-home-extra"
-   
+    buttonId: "cta-home-extra",
+    userId: localStorage.getItem("loggedInUser") || null,
+    userType: localStorage.getItem("loggedInUser") ? "registered" : "guest",
+    loginStatus: localStorage.getItem("loggedInUser") ? "logged_in" : "logged_out"
   });
 
-  // optional navigation
   window.location.href = "products.html";
 });
 </script>
