@@ -11,11 +11,10 @@
 
   /* PAGE LOAD – GUEST */
   dataLayer.push({
-    event: "page_view",
+    event: "pageView",
     pageName: "ShopEase:Login",
     pageType: "authentication",
     userType: "guest",
-    loginStatus: "logged_out",
     userId: null
   });
 </script>
@@ -31,22 +30,25 @@ j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
 f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-574TC2N4');
 </script>
-<!-- End GTM -->
 
 <style>
-body { font-family: Arial; background:#fff; }
+body { margin:0; font-family:Arial; background:#fff; }
 .container { max-width:420px; margin:80px auto; }
-h2 { text-align:center; }
-label { display:block; margin:10px 0 4px; }
-input { width:100%; padding:10px; }
-button { margin-top:15px; padding:12px; cursor:pointer; }
+h2 { text-align:center; font-weight:500; }
+.underline { width:40px; height:3px; background:#f5c400; margin:8px auto 30px; }
+label { font-size:14px; display:block; margin-bottom:6px; }
+input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
+.actions { display:flex; gap:20px; align-items:center; }
+.primary-btn { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; cursor:pointer; }
+.link-btn { background:none; border:none; padding:0; font-size:13px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <h2>Login</h2>
+  <h2 id="title">Login</h2>
+  <div class="underline"></div>
 
   <label>Email</label>
   <input id="email" type="email">
@@ -54,10 +56,29 @@ button { margin-top:15px; padding:12px; cursor:pointer; }
   <label>Password</label>
   <input id="password" type="password">
 
-  <button onclick="submitForm()">SIGN IN</button>
+  <div id="signupField" style="display:none">
+    <label>Confirm Password</label>
+    <input id="confirmPassword" type="password">
+  </div>
+
+  <div class="actions">
+    <button class="primary-btn" id="submitBtn"
+      data-cta-intent="submit_login"
+      onclick="submitForm()">
+      SIGN IN
+    </button>
+
+    <button class="link-btn" id="toggleBtn"
+      data-cta-intent="create_account"
+      onclick="toggleMode()">
+      CREATE ACCOUNT
+    </button>
+  </div>
 </div>
 
 <script>
+let mode = "login";
+
 /* ================= EMAIL ENCRYPTION ================= */
 async function encryptEmail(email) {
   const enc = new TextEncoder();
@@ -68,64 +89,97 @@ async function encryptEmail(email) {
     .join("");
 }
 
-/* ================= USERS STORAGE ================= */
+/* ================= STORAGE ================= */
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
+}
+function setUsers(users) {
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
+/* ================= TOGGLE LOGIN / SIGNUP ================= */
+function toggleMode() {
+  mode = mode === "login" ? "signup" : "login";
+
+  document.getElementById("title").innerText =
+    mode === "login" ? "Login" : "Create Account";
+
+  document.getElementById("submitBtn").innerText =
+    mode === "login" ? "SIGN IN" : "SIGN UP";
+
+  document.getElementById("toggleBtn").innerText =
+    mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
+
+  document.getElementById("signupField").style.display =
+    mode === "signup" ? "block" : "none";
 }
 
 /* ================= SUBMIT ================= */
 async function submitForm() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+  const emailVal = document.getElementById("email").value.trim();
+  const passVal = document.getElementById("password").value.trim();
 
-  /* LOGIN INITIATED – GUEST */
   dataLayer.push({
     event: "login_initiated",
-    authMode: "login",
+    authMode: mode,
     userType: "guest",
-    loginStatus: "logged_out",
     userId: null
   });
 
-  if (!email || !password) {
+  if (!emailVal || !passVal) {
     dataLayer.push({
       event: "login_failed",
       reason: "missing_fields",
       userType: "guest",
-      loginStatus: "logged_out",
       userId: null
     });
-    alert("Fill all fields");
+    alert("Please fill all fields");
     return;
   }
 
-  const encryptedUserId = await encryptEmail(email);
-  const users = getUsers();
-  const validUser = users.find(u => u.email === email && u.pass === password);
+  const encryptedUserId = await encryptEmail(emailVal);
+  let users = getUsers();
 
-  if (!validUser) {
-    dataLayer.push({
-      event: "login_failed",
-      reason: "invalid_credentials",
-      userType: "guest",
-      loginStatus: "logged_out",
-      userId: null
-    });
-    alert("Invalid credentials");
-    return;
+  if (mode === "signup") {
+    const confirmVal = document.getElementById("confirmPassword").value.trim();
+    if (passVal !== confirmVal) {
+      dataLayer.push({
+        event: "login_failed",
+        reason: "password_mismatch",
+        userType: "guest",
+        userId: null
+      });
+      alert("Passwords do not match");
+      return;
+    }
+
+    users.push({ email: emailVal, pass: passVal });
+    setUsers(users);
+
+  } else {
+    const valid = users.find(u => u.email === emailVal && u.pass === passVal);
+    if (!valid) {
+      dataLayer.push({
+        event: "login_failed",
+        reason: "invalid_credentials",
+        userType: "guest",
+        userId: null
+      });
+      alert("Invalid credentials");
+      return;
+    }
   }
 
-  /* LOGIN SUCCESS – USER ID MUST BE HERE ✅ */
+  /* ✅ SUCCESS (LOGIN OR SIGNUP) */
   localStorage.setItem("loggedInUser", encryptedUserId);
 
   dataLayer.push({
     event: "login_success",
     userId: encryptedUserId,
-    userType: "registered",
-    loginStatus: "logged_in"
+    userType: "registered"
   });
 
-  alert("Login successful");
+  window.location.href = "index.html";
 }
 </script>
 
