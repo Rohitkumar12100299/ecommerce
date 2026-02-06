@@ -98,7 +98,7 @@ document.addEventListener("click", function(e){
   if(!btn) return;
 
   dataLayer.push({
-   
+    event: "buttonClick",
     buttonId: btn.id || "na",
     buttonText: btn.getAttribute("data-original-text") || btn.innerText.trim(),
     buttonIntent: btn.getAttribute("data-cta-intent") || "na",
@@ -133,17 +133,22 @@ async function submitForm() {
   const emailVal = document.getElementById("email").value.trim();
   const passVal = document.getElementById("password").value.trim();
 
-  /* ✅ LOGIN INITIATED – GUEST STATE */
+  /* LOGIN INITIATED – GUEST */
   dataLayer.push({
     event: "login_initiated",
-   
     userId: null,
     userType: "guest",
     loginStatus: "logged_out"
   });
 
   if (!emailVal || !passVal) {
-    dataLayer.push({ event: "login_failed", reason: "missing_fields" });
+    dataLayer.push({
+      event: "login_failed",
+      reason: "missing_fields",
+      userId: null,
+      userType: "guest",
+      loginStatus: "logged_out"
+    });
     alert("Please fill all fields");
     return;
   }
@@ -154,7 +159,13 @@ async function submitForm() {
     const confirmVal = document.getElementById("confirmPassword").value.trim();
 
     if (passVal !== confirmVal) {
-      dataLayer.push({ event: "login_failed", reason: "password_mismatch" });
+      dataLayer.push({
+        event: "login_failed",
+        reason: "password_mismatch",
+        userId: null,
+        userType: "guest",
+        loginStatus: "logged_out"
+      });
       alert("Passwords do not match");
       return;
     }
@@ -166,10 +177,8 @@ async function submitForm() {
 
     dataLayer.push({ event: "signup_success" });
 
-    /* ✅ LOGIN INITIATED – LOGGED IN STATE */
     dataLayer.push({
       event: "login_initiated",
-      
       userId: encryptedUserId,
       userType: "registered",
       loginStatus: "logged_in"
@@ -181,9 +190,13 @@ async function submitForm() {
     const valid = users.find(u => u.email === emailVal && u.pass === passVal);
 
     if (!valid) {
-      dataLayer.push({ event: "login_failed", reason: "invalid_credentials",userId: null,
-    userType: "guest",
-    loginStatus: "logged_out" });
+      dataLayer.push({
+        event: "login_failed",
+        reason: "invalid_credentials",
+        userId: null,
+        userType: "guest",
+        loginStatus: "logged_out"
+      });
       alert("Invalid credentials");
       return;
     }
@@ -191,10 +204,8 @@ async function submitForm() {
     localStorage.setItem("loggedInUser", encryptedUserId);
     dataLayer.push({ event: "login_success" });
 
-    /* ✅ LOGIN INITIATED – LOGGED IN STATE */
     dataLayer.push({
       event: "login_initiated",
-      
       userId: encryptedUserId,
       userType: "registered",
       loginStatus: "logged_in"
@@ -207,4 +218,3 @@ async function submitForm() {
 
 </body>
 </html>
-
