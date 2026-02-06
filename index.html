@@ -16,12 +16,12 @@
       const userId = localStorage.getItem("loggedInUser");
 
       dataLayer.push({
-        pageName: "ShopEase:Home",
-        pageType: "homepage",
-        siteName: "ShopEase",
+        page_Name: "ShopEase:Home",
+        page_Type: "homepage",
+        site_Name: "ShopEase",
         language: "en-US",
-        userId: userId ? userId : null,
-        userType: userId ? "registered" : "guest"
+        user_Id: userId ? userId : null,
+        user_Type: userId ? "registered" : "guest"
        
       });
     })();
@@ -155,8 +155,8 @@ function logout() {
 
   dataLayer.push({
     event: "logout",
-    userId: null,
-    userType: "guest"
+    user_Id: null,
+    user_Type: "guest"
    
   });
 
@@ -171,8 +171,8 @@ function logout() {
 document.getElementById("cta-home-extra").addEventListener("click", function () {
   dataLayer.push({
     event: "buttonClick",
-    buttonText: "Explore Collections",
-    buttonId: "cta-home-extra"
+    button_Text: "Explore Collections",
+    button_Id: "cta-home-extra"
   });
   window.location.href = "products.html";
 });
