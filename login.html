@@ -8,47 +8,45 @@
 <!-- ================= DATA LAYER ================= -->
 <script>
   window.dataLayer = window.dataLayer || [];
-</script>
 
-<!-- ================= PAGE VIEW ================= -->
-<script>
-dataLayer.push({
-  event: "pageView",
-  pageName: "ShopEase:Login",
-  pageType: "authentication",
-  siteName: "ShopEase",
-  language: "en-US"
-});
+  /* PAGE LOAD – GUEST */
+  dataLayer.push({
+    
+    pageName: "ShopEase:Login",
+    pageType: "authentication",
+    userType: "guest",
+    loginStatus: "logged_out",
+    userId: null
+  });
 </script>
 
 <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];
+<script>
+(function(w,d,s,l,i){w[l]=w[l]||[];
 w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-var f=d.getElementsByTagName(s)[0],j=d.createElement(s),
-dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
+j.async=true;
 j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
 f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+})(window,document,'script','dataLayer','GTM-574TC2N4');
+</script>
 <!-- End GTM -->
 
 <style>
-body { margin:0; font-family:Arial; background:#fff; }
+body { font-family: Arial; background:#fff; }
 .container { max-width:420px; margin:80px auto; }
-h2 { text-align:center; font-weight:500; }
-.underline { width:40px; height:3px; background:#f5c400; margin:8px auto 30px; }
-label { font-size:14px; display:block; margin-bottom:6px; }
-input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
-.actions { display:flex; gap:20px; align-items:center; }
-.primary-btn { background:#f5c400; border:none; padding:12px 24px; font-weight:bold; cursor:pointer; }
-.link-btn { background:none; border:none; padding:0; font-size:13px; cursor:pointer; }
+h2 { text-align:center; }
+label { display:block; margin:10px 0 4px; }
+input { width:100%; padding:10px; }
+button { margin-top:15px; padding:12px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
 <div class="container">
-  <h2 id="title">Login</h2>
-  <div class="underline"></div>
+  <h2>Login</h2>
 
   <label>Email</label>
   <input id="email" type="email">
@@ -56,25 +54,10 @@ input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
   <label>Password</label>
   <input id="password" type="password">
 
-  <div id="signupField" style="display:none">
-    <label>Confirm Password</label>
-    <input id="confirmPassword" type="password">
-  </div>
-
-  <div class="actions">
-    <button class="primary-btn" id="submitBtn"
-      data-cta-intent="submit_login"
-      onclick="submitForm()">SIGN IN</button>
-
-    <button class="link-btn" id="toggleBtn"
-      data-cta-intent="create_account"
-      onclick="toggleMode()">CREATE ACCOUNT</button>
-  </div>
+  <button onclick="submitForm()">SIGN IN</button>
 </div>
 
 <script>
-let mode = "login";
-
 /* ================= EMAIL ENCRYPTION ================= */
 async function encryptEmail(email) {
   const enc = new TextEncoder();
@@ -85,147 +68,64 @@ async function encryptEmail(email) {
     .join("");
 }
 
-/* STORE ORIGINAL BUTTON TEXT */
-document.addEventListener("click", function(e){
-  const btn = e.target.closest("button");
-  if(!btn) return;
-  btn.setAttribute("data-original-text", btn.innerText.trim());
-}, true);
-
-/* CTA CLICK TRACKING */
-document.addEventListener("click", function(e){
-  const btn = e.target.closest("button");
-  if(!btn) return;
-
-  dataLayer.push({
-    event: "buttonClick",
-    buttonId: btn.id || "na",
-    buttonText: btn.getAttribute("data-original-text") || btn.innerText.trim(),
-    buttonIntent: btn.getAttribute("data-cta-intent") || "na",
-    authMode: mode
-  });
-});
-
-/* TOGGLE LOGIN / SIGNUP */
-function toggleMode() {
-  mode = mode === "login" ? "signup" : "login";
-
-  document.getElementById("title").innerText =
-    mode === "login" ? "Login" : "Create Account";
-
-  document.getElementById("submitBtn").innerText =
-    mode === "login" ? "SIGN IN" : "SIGN UP";
-
-  document.getElementById("toggleBtn").innerText =
-    mode === "login" ? "CREATE ACCOUNT" : "BACK TO LOGIN";
-
-  document.getElementById("signupField").style.display =
-    mode === "signup" ? "block" : "none";
-}
-
-/* STORAGE */
+/* ================= USERS STORAGE ================= */
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
-/* SUBMIT */
+/* ================= SUBMIT ================= */
 async function submitForm() {
-  const emailVal = document.getElementById("email").value.trim();
-  const passVal = document.getElementById("password").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
 
   /* LOGIN INITIATED – GUEST */
   dataLayer.push({
     event: "login_initiated",
-    userId: null,
+    authMode: "login",
     userType: "guest",
-    loginStatus: "logged_out"
+    loginStatus: "logged_out",
+    userId: null
   });
 
-  if (!emailVal || !passVal) {
+  if (!email || !password) {
     dataLayer.push({
       event: "login_failed",
       reason: "missing_fields",
-      userId: null,
       userType: "guest",
-      loginStatus: "logged_out"
+      loginStatus: "logged_out",
+      userId: null
     });
-    alert("Please fill all fields");
+    alert("Fill all fields");
     return;
   }
 
-  const encryptedUserId = await encryptEmail(emailVal);
+  const encryptedUserId = await encryptEmail(email);
+  const users = getUsers();
+  const validUser = users.find(u => u.email === email && u.pass === password);
 
-  if (mode === "signup") {
-    const confirmVal = document.getElementById("confirmPassword").value.trim();
-
-    if (passVal !== confirmVal) {
-      dataLayer.push({
-        event: "login_failed",
-        reason: "password_mismatch",
-        userId: null,
-        userType: "guest",
-        loginStatus: "logged_out"
-      });
-      alert("Passwords do not match");
-      return;
-    }
-
-    const users = getUsers();
-    users.push({ email: emailVal, pass: passVal });
-    localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", encryptedUserId);
-
+  if (!validUser) {
     dataLayer.push({
-      event: "login_success",
-      userId: encryptedUserId,
-      userType: "registered",
-      loginStatus: "logged_in"
+      event: "login_failed",
+      reason: "invalid_credentials",
+      userType: "guest",
+      loginStatus: "logged_out",
+      userId: null
     });
-
-    dataLayer.push({
-      event: "login_initiated",
-      userId: encryptedUserId,
-      userType: "registered",
-      loginStatus: "logged_in"
-    });
-
-    window.location.href = "index.html";
-  } else {
-    const users = getUsers();
-    const valid = users.find(u => u.email === emailVal && u.pass === passVal);
-
-    if (!valid) {
-      dataLayer.push({
-        event: "login_failed",
-        reason: "invalid_credentials",
-        userId: null,
-        userType: "guest",
-        loginStatus: "logged_out"
-      });
-      alert("Invalid credentials");
-      return;
-    }
-
-    localStorage.setItem("loggedInUser", encryptedUserId);
-
-    /* ✅ LOGIN SUCCESS WITH USER ID */
-    dataLayer.push({
-      event: "login_success",
-      userId: encryptedUserId,
-      userType: "registered",
-      loginStatus: "logged_in"
-    });
-
-    /* STATE UPDATE */
-    dataLayer.push({
-      event: "login_initiated",
-      userId: encryptedUserId,
-      userType: "registered",
-      loginStatus: "logged_in"
-    });
-
-    window.location.href = "index.html";
+    alert("Invalid credentials");
+    return;
   }
+
+  /* LOGIN SUCCESS – USER ID MUST BE HERE ✅ */
+  localStorage.setItem("loggedInUser", encryptedUserId);
+
+  dataLayer.push({
+    event: "login_success",
+    userId: encryptedUserId,
+    userType: "registered",
+    loginStatus: "logged_in"
+  });
+
+  alert("Login successful");
 }
 </script>
 
