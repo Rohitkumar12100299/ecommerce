@@ -16,27 +16,23 @@
       const userId = localStorage.getItem("loggedInUser");
 
       dataLayer.push({
-        
         pageName: "ShopEase:Home",
         pageType: "homepage",
         siteName: "ShopEase",
         language: "en-US",
-
-        /* ✅ LOGIN STATE */
         userId: userId ? userId : null,
-        userType: userId ? "registered" : "guest",
-        loginStatus: userId ? "logged_in" : "logged_out"
+        userType: userId ? "registered" : "guest"
+       
       });
     })();
   </script>
 
   <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-})(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-<!-- End Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
 
   <!-- ================= DIGITAL DATA (ADOBE) ================= -->
   <script>
@@ -60,24 +56,11 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       },
       event: []
     };
-
-    (function () {
-      const originalPush = window.digitalData.event.push;
-      window.digitalData.event.push = function () {
-        const result = originalPush.apply(this, arguments);
-        const customEvent = new CustomEvent("digitalDataEventPushed", {
-          detail: arguments[0]
-        });
-        window.dispatchEvent(customEvent);
-        return result;
-      };
-    })();
   </script>
 
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { background-color: #f9f9f9; }
-
     header {
       background: rgba(51, 51, 51, 0.9);
       color: white;
@@ -88,11 +71,9 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       top: 0;
       z-index: 100;
     }
-
     nav ul { display: flex; list-style: none; }
     nav ul li { margin-left: 1.5rem; }
     nav a { color: white; text-decoration: none; font-weight: 500; }
-
     .hero {
       background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)),
       url('https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a');
@@ -107,7 +88,6 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
       justify-content: center;
       align-items: center;
     }
-
     .hero button {
       background: #4CAF50;
       color: white;
@@ -127,15 +107,15 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   <h1>Rohit Ki Dukan</h1>
   <nav>
     <ul>
-      <li><a href="index.html">Home</a></li>
-      <li><a href="products.html">Shop</a></li>
+      <li><a href="index.html" class="header-cta" data-cta-id="home">Home</a></li>
+      <li><a href="products.html" class="header-cta" data-cta-id="shop">Shop</a></li>
 
       <li id="authBtn">
-        <a href="login.html">Sign In / Sign Up</a>
+        <a href="login.html" class="header-cta" data-cta-id="login">Sign In / Sign Up</a>
       </li>
 
       <li id="logoutBtn" style="display:none">
-        <a href="javascript:void(0)" onclick="logout()">Logout</a>
+        <a href="javascript:void(0)" class="header-cta" data-cta-id="logout" onclick="logout()">Logout</a>
       </li>
     </ul>
   </nav>
@@ -155,6 +135,21 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   }
 })();
 
+/* ================= HEADER CTA CLICKS ================= */
+document.querySelectorAll(".header-cta").forEach(function (el) {
+  el.addEventListener("click", function () {
+    const userId = localStorage.getItem("loggedInUser");
+
+    dataLayer.push({
+      event: "header_cta_click",
+      ctaText: this.innerText.trim(),
+      ctaId: this.getAttribute("data-cta-id"),
+      userId: userId ? userId : null,
+      userType: userId ? "registered" : "guest"
+    });
+  });
+});
+
 /* ================= LOGOUT ================= */
 function logout() {
   localStorage.removeItem("loggedInUser");
@@ -162,8 +157,8 @@ function logout() {
   dataLayer.push({
     event: "logout",
     userId: null,
-    userType: "guest",
-    loginStatus: "logged_out"
+    userType: "guest"
+   
   });
 
   digitalData.event.push({
@@ -173,15 +168,13 @@ function logout() {
   window.location.reload();
 }
 
-/* ================= HOME CTA CLICK ================= */
+/* ================= HOME CTA (ALREADY EXISTING) ================= */
 document.getElementById("cta-home-extra").addEventListener("click", function () {
   dataLayer.push({
     event: "buttonClick",
     buttonText: "Explore Collections",
     buttonId: "cta-home-extra"
-    
   });
-
   window.location.href = "products.html";
 });
 </script>
