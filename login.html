@@ -19,14 +19,27 @@ dataLayer.push({
   siteName: "ShopEase",
   language: "en-US"
 });
+
+/* ✅ USER STATE BEFORE LOGIN (GUEST) */
+dataLayer.push({
+  
+  
+    userId: null,
+    userType: "guest",
+    loginStatus: "logged_out"
+  
+});
 </script>
-  <!-- Google Tag Manager -->
-<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];
+w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
+var f=d.getElementsByTagName(s)[0],j=d.createElement(s),
+dl=l!='dataLayer'?'&l='+l:'';j.async=true;
+j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-<!-- End Google Tag Manager -->
+<!-- End GTM -->
 
 <style>
 body { margin:0; font-family:Arial; background:#fff; }
@@ -59,37 +72,37 @@ input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
   </div>
 
   <div class="actions">
-    <button
-      class="primary-btn"
-      id="submitBtn"
+    <button class="primary-btn" id="submitBtn"
       data-cta-intent="submit_login"
-      onclick="submitForm()">
-      SIGN IN
-    </button>
+      onclick="submitForm()">SIGN IN</button>
 
-    <button
-      class="link-btn"
-      id="toggleBtn"
+    <button class="link-btn" id="toggleBtn"
       data-cta-intent="create_account"
-      onclick="toggleMode()">
-      CREATE ACCOUNT
-    </button>
+      onclick="toggleMode()">CREATE ACCOUNT</button>
   </div>
 </div>
 
 <script>
 let mode = "login";
 
-/* =====================================================
-   STORE BUTTON TEXT BEFORE UI CHANGES
-   ===================================================== */
+/* ================= EMAIL ENCRYPTION (SHA-256) ================= */
+async function encryptEmail(email) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(email.toLowerCase().trim());
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hashBuffer))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+/* STORE BUTTON TEXT */
 document.addEventListener("click", function(e){
   const btn = e.target.closest("button");
   if(!btn) return;
   btn.setAttribute("data-original-text", btn.innerText.trim());
 }, true);
 
-/* ================= CTA CLICK TRACKING ================= */
+/* CTA CLICK TRACKING */
 document.addEventListener("click", function(e){
   const btn = e.target.closest("button");
   if(!btn) return;
@@ -103,7 +116,7 @@ document.addEventListener("click", function(e){
   });
 });
 
-/* ================= TOGGLE LOGIN / SIGNUP ================= */
+/* TOGGLE LOGIN / SIGNUP */
 function toggleMode() {
   mode = mode === "login" ? "signup" : "login";
 
@@ -120,38 +133,31 @@ function toggleMode() {
     mode === "signup" ? "block" : "none";
 }
 
-/* ================= STORAGE ================= */
+/* STORAGE */
 function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
-/* ================= SUBMIT ================= */
-function submitForm() {
+/* SUBMIT */
+async function submitForm() {
   const emailVal = document.getElementById("email").value.trim();
   const passVal = document.getElementById("password").value.trim();
 
-  dataLayer.push({
-    event: "login_initiated",
-    authMode: mode
-  });
+  dataLayer.push({ event: "login_initiated", authMode: mode });
 
   if (!emailVal || !passVal) {
-    dataLayer.push({
-      event: "login_failed",
-      reason: "missing_fields"
-    });
+    dataLayer.push({ event: "login_failed", reason: "missing_fields" });
     alert("Please fill all fields");
     return;
   }
+
+  const encryptedUserId = await encryptEmail(emailVal);
 
   if (mode === "signup") {
     const confirmVal = document.getElementById("confirmPassword").value.trim();
 
     if (passVal !== confirmVal) {
-      dataLayer.push({
-        event: "login_failed",
-        reason: "password_mismatch"
-      });
+      dataLayer.push({ event: "login_failed", reason: "password_mismatch" });
       alert("Passwords do not match");
       return;
     }
@@ -159,28 +165,43 @@ function submitForm() {
     const users = getUsers();
     users.push({ email: emailVal, pass: passVal });
     localStorage.setItem("users", JSON.stringify(users));
-    localStorage.setItem("loggedInUser", emailVal);
+    localStorage.setItem("loggedInUser", encryptedUserId);
 
     dataLayer.push({ event: "signup_success" });
+
+    /* ✅ LOGGED-IN USER STATE */
+    dataLayer.push({
+      
+      
+        userId: encryptedUserId,
+        userType: "registered",
+        loginStatus: "logged_in"
+      
+    });
+
     window.location.href = "index.html";
-  } 
-  else {
+  } else {
     const users = getUsers();
     const valid = users.find(u => u.email === emailVal && u.pass === passVal);
 
     if (!valid) {
-      dataLayer.push({
-        event: "login_failed",
-        reason: "invalid_credentials"
-      });
+      dataLayer.push({ event: "login_failed", reason: "invalid_credentials" });
       alert("Invalid credentials");
       return;
     }
 
-    localStorage.setItem("loggedInUser", emailVal);
+    localStorage.setItem("loggedInUser", encryptedUserId);
+    dataLayer.push({ event: "login_success" });
+
+    /* ✅ LOGGED-IN USER STATE */
     dataLayer.push({
-      event: "login_success"
+     
+        userId: encryptedUserId,
+        userType: "registered",
+        loginStatus: "logged_in"
+      
     });
+
     window.location.href = "index.html";
   }
 }
@@ -188,4 +209,3 @@ function submitForm() {
 
 </body>
 </html>
-
