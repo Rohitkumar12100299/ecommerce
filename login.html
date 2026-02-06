@@ -15,7 +15,7 @@
     pageName: "ShopEase:Login",
     pageType: "authentication",
     userType: "guest",
-    loginStatus: "logged_out",
+    
     userId: null
   });
 </script>
@@ -83,7 +83,7 @@ async function submitForm() {
     event: "login_initiated",
     authMode: "login",
     userType: "guest",
-    loginStatus: "logged_out",
+    
     userId: null
   });
 
@@ -92,7 +92,7 @@ async function submitForm() {
       event: "login_failed",
       reason: "missing_fields",
       userType: "guest",
-      loginStatus: "logged_out",
+     
       userId: null
     });
     alert("Fill all fields");
@@ -108,7 +108,7 @@ async function submitForm() {
       event: "login_failed",
       reason: "invalid_credentials",
       userType: "guest",
-      loginStatus: "logged_out",
+      
       userId: null
     });
     alert("Invalid credentials");
@@ -121,8 +121,8 @@ async function submitForm() {
   dataLayer.push({
     event: "login_success",
     userId: encryptedUserId,
-    userType: "registered",
-    loginStatus: "logged_in"
+    userType: "registered"
+    
   });
 
   alert("Login successful");
@@ -131,3 +131,4 @@ async function submitForm() {
 
 </body>
 </html>
+
