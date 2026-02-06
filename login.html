@@ -13,21 +13,11 @@
 <!-- ================= PAGE VIEW ================= -->
 <script>
 dataLayer.push({
-  event: "pageView",
+ 
   pageName: "ShopEase:Login",
   pageType: "authentication",
   siteName: "ShopEase",
   language: "en-US"
-});
-
-/* ✅ USER STATE BEFORE LOGIN (GUEST) */
-dataLayer.push({
-  
-  
-    userId: null,
-    userType: "guest",
-    loginStatus: "logged_out"
-  
 });
 </script>
 
@@ -85,17 +75,17 @@ input { width:100%; padding:12px; margin-bottom:20px; border:1px solid #ddd; }
 <script>
 let mode = "login";
 
-/* ================= EMAIL ENCRYPTION (SHA-256) ================= */
+/* ================= EMAIL ENCRYPTION ================= */
 async function encryptEmail(email) {
-  const encoder = new TextEncoder();
-  const data = encoder.encode(email.toLowerCase().trim());
-  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
-  return Array.from(new Uint8Array(hashBuffer))
+  const enc = new TextEncoder();
+  const data = enc.encode(email.toLowerCase().trim());
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
     .map(b => b.toString(16).padStart(2, "0"))
     .join("");
 }
 
-/* STORE BUTTON TEXT */
+/* STORE ORIGINAL BUTTON TEXT */
 document.addEventListener("click", function(e){
   const btn = e.target.closest("button");
   if(!btn) return;
@@ -108,7 +98,7 @@ document.addEventListener("click", function(e){
   if(!btn) return;
 
   dataLayer.push({
-    event: "buttonClick",
+   
     buttonId: btn.id || "na",
     buttonText: btn.getAttribute("data-original-text") || btn.innerText.trim(),
     buttonIntent: btn.getAttribute("data-cta-intent") || "na",
@@ -143,7 +133,14 @@ async function submitForm() {
   const emailVal = document.getElementById("email").value.trim();
   const passVal = document.getElementById("password").value.trim();
 
-  dataLayer.push({ event: "login_initiated", authMode: mode });
+  /* ✅ LOGIN INITIATED – GUEST STATE */
+  dataLayer.push({
+    event: "login_initiated",
+   
+    userId: null,
+    userType: "guest",
+    loginStatus: "logged_out"
+  });
 
   if (!emailVal || !passVal) {
     dataLayer.push({ event: "login_failed", reason: "missing_fields" });
@@ -169,14 +166,13 @@ async function submitForm() {
 
     dataLayer.push({ event: "signup_success" });
 
-    /* ✅ LOGGED-IN USER STATE */
+    /* ✅ LOGIN INITIATED – LOGGED IN STATE */
     dataLayer.push({
+      event: "login_initiated",
       
-      
-        userId: encryptedUserId,
-        userType: "registered",
-        loginStatus: "logged_in"
-      
+      userId: encryptedUserId,
+      userType: "registered",
+      loginStatus: "logged_in"
     });
 
     window.location.href = "index.html";
@@ -193,13 +189,13 @@ async function submitForm() {
     localStorage.setItem("loggedInUser", encryptedUserId);
     dataLayer.push({ event: "login_success" });
 
-    /* ✅ LOGGED-IN USER STATE */
+    /* ✅ LOGIN INITIATED – LOGGED IN STATE */
     dataLayer.push({
-     
-        userId: encryptedUserId,
-        userType: "registered",
-        loginStatus: "logged_in"
+      event: "login_initiated",
       
+      userId: encryptedUserId,
+      userType: "registered",
+      loginStatus: "logged_in"
     });
 
     window.location.href = "index.html";
