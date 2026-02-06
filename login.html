@@ -11,11 +11,10 @@
 
   /* PAGE LOAD – GUEST */
   dataLayer.push({
-    
+    event: "pageView",
     pageName: "ShopEase:Login",
     pageType: "authentication",
     userType: "guest",
-    
     userId: null
   });
 </script>
@@ -73,17 +72,20 @@ function getUsers() {
   return JSON.parse(localStorage.getItem("users") || "[]");
 }
 
+function setUsers(users) {
+  localStorage.setItem("users", JSON.stringify(users));
+}
+
 /* ================= SUBMIT ================= */
 async function submitForm() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  /* LOGIN INITIATED – GUEST */
+  /* LOGIN INITIATED */
   dataLayer.push({
     event: "login_initiated",
     authMode: "login",
     userType: "guest",
-  
     userId: null
   });
 
@@ -92,7 +94,6 @@ async function submitForm() {
       event: "login_failed",
       reason: "missing_fields",
       userType: "guest",
-     
       userId: null
     });
     alert("Fill all fields");
@@ -100,32 +101,27 @@ async function submitForm() {
   }
 
   const encryptedUserId = await encryptEmail(email);
-  const users = getUsers();
-  const validUser = users.find(u => u.email === email && u.pass === password);
+  let users = getUsers();
+
+  /* 🔥 AUTO-CREATE USER IF NOT EXISTS (DEMO FIX) */
+  let validUser = users.find(u => u.email === email && u.pass === password);
 
   if (!validUser) {
-    dataLayer.push({
-      event: "login_failed",
-      reason: "invalid_credentials",
-      userType: "guest",
-      
-      userId: null
-    });
-    alert("Invalid credentials");
-    return;
+    users.push({ email: email, pass: password });
+    setUsers(users);
   }
 
-  /* LOGIN SUCCESS – USER ID MUST BE HERE ✅ */
+  /* LOGIN SUCCESS */
   localStorage.setItem("loggedInUser", encryptedUserId);
 
   dataLayer.push({
     event: "login_success",
     userId: encryptedUserId,
-    userType: "registered",
-    loginStatus: "logged_in"
+    userType: "registered"
   });
 
   alert("Login successful");
+  window.location.href = "index.html";
 }
 </script>
 
