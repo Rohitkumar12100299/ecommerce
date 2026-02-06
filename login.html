@@ -2,87 +2,130 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Home</title>
+<title>Login</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<!-- ================= DATA LAYER ================= -->
 <script>
   window.dataLayer = window.dataLayer || [];
+
+  /* PAGE LOAD – GUEST */
+  dataLayer.push({
+    
+    pageName: "ShopEase:Login",
+    pageType: "authentication",
+    userType: "guest",
+    
+    userId: null
+  });
 </script>
 
 <!-- Google Tag Manager -->
 <script>
 (function(w,d,s,l,i){w[l]=w[l]||[];
 w[l].push({'gtm.start': new Date().getTime(),event:'gtm.js'});
-var f=d.getElementsByTagNameName(s)[0],
+var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';
-j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+j.async=true;
+j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
 f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-574TC2N4');
 </script>
+<!-- End GTM -->
 
 <style>
-body { font-family: Arial; padding:40px; }
-.btn { padding:10px 16px; background:#f5c400; border:none; cursor:pointer; }
+body { font-family: Arial; background:#fff; }
+.container { max-width:420px; margin:80px auto; }
+h2 { text-align:center; }
+label { display:block; margin:10px 0 4px; }
+input { width:100%; padding:10px; }
+button { margin-top:15px; padding:12px; cursor:pointer; }
 </style>
 </head>
 
 <body>
 
-<h2 id="welcomeText"></h2>
-<button id="loginBtn" class="btn" onclick="goLogin()">Login</button>
-<button id="logoutBtn" class="btn" onclick="logout()">Logout</button>
+<div class="container">
+  <h2>Login</h2>
+
+  <label>Email</label>
+  <input id="email" type="email">
+
+  <label>Password</label>
+  <input id="password" type="password">
+
+  <button onclick="submitForm()">SIGN IN</button>
+</div>
 
 <script>
-/* ================= CHECK LOGIN STATE ================= */
-const userId = localStorage.getItem("loggedInUser");
-const welcomeText = document.getElementById("welcomeText");
-const loginBtn = document.getElementById("loginBtn");
-const logoutBtn = document.getElementById("logoutBtn");
+/* ================= EMAIL ENCRYPTION ================= */
+async function encryptEmail(email) {
+  const enc = new TextEncoder();
+  const data = enc.encode(email.toLowerCase().trim());
+  const hash = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
-if (userId) {
-  /* USER LOGGED IN */
-  welcomeText.innerText = "Welcome back 👋";
-  loginBtn.style.display = "none";
-  logoutBtn.style.display = "inline-block";
+/* ================= USERS STORAGE ================= */
+function getUsers() {
+  return JSON.parse(localStorage.getItem("users") || "[]");
+}
+
+/* ================= SUBMIT ================= */
+async function submitForm() {
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+
+  /* LOGIN INITIATED – GUEST */
+  dataLayer.push({
+    event: "login_initiated",
+    authMode: "login",
+    userType: "guest",
+  
+    userId: null
+  });
+
+  if (!email || !password) {
+    dataLayer.push({
+      event: "login_failed",
+      reason: "missing_fields",
+      userType: "guest",
+     
+      userId: null
+    });
+    alert("Fill all fields");
+    return;
+  }
+
+  const encryptedUserId = await encryptEmail(email);
+  const users = getUsers();
+  const validUser = users.find(u => u.email === email && u.pass === password);
+
+  if (!validUser) {
+    dataLayer.push({
+      event: "login_failed",
+      reason: "invalid_credentials",
+      userType: "guest",
+      
+      userId: null
+    });
+    alert("Invalid credentials");
+    return;
+  }
+
+  /* LOGIN SUCCESS – USER ID MUST BE HERE ✅ */
+  localStorage.setItem("loggedInUser", encryptedUserId);
 
   dataLayer.push({
-    event: "page_view",
-    pageName: "ShopEase:Home",
-    userId: userId,
+    event: "login_success",
+    userId: encryptedUserId,
     userType: "registered",
     loginStatus: "logged_in"
   });
 
-} else {
-  /* GUEST */
-  welcomeText.innerText = "Welcome Guest 👋";
-  loginBtn.style.display = "inline-block";
-  logoutBtn.style.display = "none";
-
-  dataLayer.push({
-    event: "page_view",
-    pageName: "ShopEase:Home",
-    userId: null,
-    userType: "guest",
-    loginStatus: "logged_out"
-  });
-}
-
-function goLogin() {
-  window.location.href = "login.html";
-}
-
-function logout() {
-  localStorage.removeItem("loggedInUser");
-
-  dataLayer.push({
-    event: "logout",
-    userId: null,
-    userType: "guest",
-    loginStatus: "logged_out"
-  });
-
-  window.location.reload();
+  alert("Login successful");
 }
 </script>
 
