@@ -108,10 +108,7 @@ const products = [
 
   dataLayer.push({
     event: "view_item_list",
-    page_Name: "PLP",
-    page_Type: "plp",
-    user_Id: userId ? userId : null,
-    user_Type: userId ? "registered" : "guest",
+   
    
     items: items
   });
@@ -139,10 +136,7 @@ function displayProducts() {
       /* GA4 SELECT ITEM */
       dataLayer.push({
         event: "select_item",
-        page_Name: "PLP",
-         page_Type: "plp",
-        user_Id: userId ? userId : null,
-        user_Type: userId ? "registered" : "guest",
+        
        
         items: [{
           item_id: "SKU_" + product.id,
@@ -160,9 +154,8 @@ function displayProducts() {
       dataLayer.push({
         event: "linkClick",
         link_Text: product.name,
-        link_Url: `product.html?id=${product.id}`,
-        page_Name: "PLP",
-        page_Type: "plp",
+        link_Url: `product.html?id=${product.id}`
+       
       });
 
       window.location.href = `product.html?id=${product.id}`;
