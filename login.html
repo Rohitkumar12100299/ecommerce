@@ -12,10 +12,10 @@
   /* PAGE LOAD – GUEST */
   dataLayer.push({
    
-    pageName: "ShopEase:Login",
-    pageType: "authentication",
-    userType: "guest",
-    userId: null,
+    page_Name: "ShopEase:Login",
+    page_Type: "authentication",
+    user_Type: "guest",
+    user_Id: null,
     language: "en-US"
   });
 </script>
@@ -123,16 +123,16 @@ async function submitForm() {
   dataLayer.push({
     event: "login_initiated",
     authMode: mode,
-    userType: "guest",
-    userId: null
+    user_Type: "guest",
+    user_Id: null
   });
 
   if (!emailVal || !passVal) {
     dataLayer.push({
       event: "login_failed",
       reason: "missing_fields",
-      userType: "guest",
-      userId: null
+      user_Type: "guest",
+      user_Id: null
     });
     alert("Please fill all fields");
     return;
@@ -147,8 +147,8 @@ async function submitForm() {
       dataLayer.push({
         event: "login_failed",
         reason: "password_mismatch",
-        userType: "guest",
-        userId: null
+        user_Type: "guest",
+        user_Id: null
       });
       alert("Passwords do not match");
       return;
@@ -163,8 +163,8 @@ async function submitForm() {
       dataLayer.push({
         event: "login_failed",
         reason: "invalid_credentials",
-        userType: "guest",
-        userId: null
+        user_Type: "guest",
+        user_Id: null
       });
       alert("Invalid credentials");
       return;
@@ -176,8 +176,8 @@ async function submitForm() {
 
   dataLayer.push({
     event: "login_success",
-    userId: encryptedUserId,
-    userType: "registered"
+    user_Id: encryptedUserId,
+    user_Type: "registered"
   });
 
   window.location.href = "index.html";
@@ -186,4 +186,5 @@ async function submitForm() {
 
 </body>
 </html>
+
 
