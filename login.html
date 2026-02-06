@@ -181,7 +181,9 @@ async function submitForm() {
     const valid = users.find(u => u.email === emailVal && u.pass === passVal);
 
     if (!valid) {
-      dataLayer.push({ event: "login_failed", reason: "invalid_credentials" });
+      dataLayer.push({ event: "login_failed", reason: "invalid_credentials",userId: null,
+    userType: "guest",
+    loginStatus: "logged_out" });
       alert("Invalid credentials");
       return;
     }
@@ -205,3 +207,4 @@ async function submitForm() {
 
 </body>
 </html>
+
