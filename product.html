@@ -7,33 +7,28 @@
 
     <!-- ================= GTM ================= -->
     <script>
-      window.dataLayer = window.dataLayer || [];
-    </script>
+    (function () {
+      const userId = localStorage.getItem("loggedInUser");
 
-    <!-- PAGE LEVEL DATA (PLP JAISE) -->
-    <script>
-      (function () {
-        const userId = localStorage.getItem("loggedInUser");
+      dataLayer.push({
+        page_Name: "PLP",
+        page_Type: "plp",
+        site_Name: "ShopEase",
+        language: "en-US",
+        user_Id: userId ? userId : null,
+        user_Type: userId ? "registered" : "guest"
+      });
+    })();
+  </script>
 
-        dataLayer.push({
-          page_Name: "PDP",
-          page_Type: "pdp",
-          site_Name: "ShopEase",
-          language: "en-US",
-          user_Id: userId ? userId : null,
-          user_Type: userId ? "registered" : "guest"
-        });
-      })();
-    </script>
-
-    <!-- Google Tag Manager (SAME AS PLP) -->
-    <script>(function(w,d,s,l,i){w[l]=w[l]||[];
-    w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
-    var f=d.getElementsByTagName(s)[0],j=d.createElement(s),
-    dl=l!='dataLayer'?'&l='+l:'';
-    j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
-    f.parentNode.insertBefore(j,f);
-    })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];
+  w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+  var f=d.getElementsByTagName(s)[0],j=d.createElement(s),
+  dl=l!='dataLayer'?'&l='+l:'';
+  j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+  f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
 
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
