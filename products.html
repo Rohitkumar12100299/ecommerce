@@ -10,21 +10,18 @@
     window.dataLayer = window.dataLayer || [];
   </script>
 
-  <!-- PAGE VIEW + LOGIN STATE (HOMEPAGE JAISE) -->
+  <!-- PAGE VIEW + LOGIN STATE -->
   <script>
     (function () {
       const userId = localStorage.getItem("loggedInUser");
 
       dataLayer.push({
-        
         page_Name: "PLP",
         page_Type: "plp",
         site_Name: "ShopEase",
         language: "en-US",
-
         user_Id: userId ? userId : null,
         user_Type: userId ? "registered" : "guest"
-        
       });
     })();
   </script>
@@ -37,9 +34,7 @@
   j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
   f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
-  <!-- End GTM -->
 
-  <!-- ================= STYLES (UNCHANGED) ================= -->
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
     body { background-color: #f9f9f9; }
@@ -74,17 +69,14 @@
 </div>
 
 <script>
-/* ================= PRODUCT DATA (UNCHANGED) ================= */
 const products = [
   { id: 1, name: "Wireless Headphones", price: 59.99, category: "electronics", image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e" },
   { id: 2, name: "Smart Watch", price: 129.99, category: "electronics", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30" },
   { id: 3, name: "Cotton T-Shirt", price: 19.99, category: "clothing", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" }
 ];
 
-/* ================= PLP ITEM LIST (GA4 STANDARD) ================= */
+/* ================= VIEW ITEM LIST ================= */
 (function () {
-  const userId = localStorage.getItem("loggedInUser");
-
   const items = products.map((product, index) => ({
     item_id: "SKU_" + product.id,
     item_name: product.name,
@@ -93,23 +85,14 @@ const products = [
     index: index,
     item_brand: "ShopEase",
     item_category: product.category,
-    item_category2: null,
-    item_category3: null,
-    item_category4: null,
-    item_category5: null,
     item_list_id: "plp_products",
     item_list_name: "ShopEase:Products",
-    item_variant: null,
-    location_id: null,
     price: product.price,
-    google_business_vertical: "retail",
     quantity: 1
   }));
 
   dataLayer.push({
     event: "view_item_list",
-   
-   
     items: items
   });
 })();
@@ -131,13 +114,10 @@ function displayProducts() {
     `;
 
     card.addEventListener("click", () => {
-      const userId = localStorage.getItem("loggedInUser");
 
-      /* GA4 SELECT ITEM */
+      /* EXISTING SELECT ITEM (UNCHANGED) */
       dataLayer.push({
         event: "select_item",
-        
-       
         items: [{
           item_id: "SKU_" + product.id,
           item_name: product.name,
@@ -150,12 +130,35 @@ function displayProducts() {
         }]
       });
 
+      /* 🔥 NEW GA4 ECOMMERCE FORMAT (ADDED ONLY) */
+      dataLayer.push({ ecommerce: null });
+
+      dataLayer.push({
+        event: "select_item_ga4",
+        ecommerce: {
+          item_list_id: "plp_products",
+          item_list_name: "ShopEase:Products",
+          items: [{
+            item_id: "SKU_" + product.id,
+            item_name: product.name,
+            affiliation: "ShopEase",
+            discount: 0,
+            index: index,
+            item_brand: "ShopEase",
+            item_category: product.category,
+            item_list_id: "plp_products",
+            item_list_name: "ShopEase:Products",
+            price: product.price,
+            quantity: 1
+          }]
+        }
+      });
+
       /* EXISTING LINK CLICK */
       dataLayer.push({
         event: "linkClick",
         link_Text: product.name,
         link_Url: `product.html?id=${product.id}`
-       
       });
 
       window.location.href = `product.html?id=${product.id}`;
