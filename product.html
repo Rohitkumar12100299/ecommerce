@@ -4,7 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ShopEase - Product</title>
-    <script src="https://assets.adobedtm.com/21b53c73144b/55224bfc5f5a/launch-6c2cbecd161e-development.min.js" async></script>
+
+    <!-- ================= GTM ================= -->
+    <script>
+      window.dataLayer = window.dataLayer || [];
+    </script>
+
+    <!-- PAGE LEVEL DATA (PLP JAISE) -->
+    <script>
+      (function () {
+        const userId = localStorage.getItem("loggedInUser");
+
+        dataLayer.push({
+          page_Name: "PDP",
+          page_Type: "pdp",
+          site_Name: "ShopEase",
+          language: "en-US",
+          user_Id: userId ? userId : null,
+          user_Type: userId ? "registered" : "guest"
+        });
+      })();
+    </script>
+
+    <!-- Google Tag Manager (SAME AS PLP) -->
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];
+    w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});
+    var f=d.getElementsByTagName(s)[0],j=d.createElement(s),
+    dl=l!='dataLayer'?'&l='+l:'';
+    j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;
+    f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-574TC2N4');</script>
+
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         header { background: #333; color: white; padding: 1rem; display: flex; justify-content: space-between; }
@@ -20,92 +50,104 @@
     </style>
 </head>
 <body>
-    <header>
-        <h1>ShopEase</h1>
-        <nav>
-            <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="products.html">Shop</a></li>
-                <li><a href="checkout.html">Cart (0)</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <section class="product-detail">
-        <div class="product-image">
-            <img id="productImg" src="" alt="Product Image">
-        </div>
-        <div class="product-info">
-            <h2 id="productName"></h2>
-            <p id="productPrice"></p>
-            <p id="productDescription"></p>
-            <label for="quantity">Quantity:</label>
-            <input type="number" id="quantity" min="1" value="1">
-            <button class="add-to-cart" id="addToCart">Add to Cart</button>
-        </div>
-    </section>
-    
-    <footer>
-        <p>&copy; 2023 ShopEase. All rights reserved.</p>
-    </footer>
 
-    <script>
-        // Sample product data
-        const products = {
-            1: { id: 1, name: "Wireless Headphones", price: 59.99, description: "High-quality wireless headphones with noise cancellation.", image: "https://via.placeholder.com/600" },
-            2: { id: 2, name: "Smart Watch", price: 129.99, description: "Feature-rich smartwatch with health monitoring.", image: "https://via.placeholder.com/600" },
-            3: { id: 3, name: "T-Shirt", price: 19.99, description: "Comfortable cotton t-shirt available in multiple colors.", image: "https://via.placeholder.com/600" },
-            4: { id: 4, name: "Jeans", price: 39.99, description: "Classic fit jeans made from durable denim.", image: "https://via.placeholder.com/600" },
-            5: { id: 5, name: "Coffee Maker", price: 49.99, description: "Automatic coffee maker with programmable timer.", image: "https://via.placeholder.com/600" },
-            6: { id: 6, name: "Blender", price: 34.99, description: "High-powered blender for smoothies and more.", image: "https://via.placeholder.com/600" },
-            7: { id: 7, name: "Laptop", price: 899.99, description: "Powerful laptop with high-resolution display.", image: "https://via.placeholder.com/600" },
-            8: { id: 8, name: "Desk Lamp", price: 24.99, description: "Adjustable LED desk lamp with multiple brightness levels.", image: "https://via.placeholder.com/600" }
-        };
+<header>
+    <h1>ShopEase</h1>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="products.html">Shop</a></li>
+            <li><a href="checkout.html">Cart (0)</a></li>
+        </ul>
+    </nav>
+</header>
 
-        // Get product ID from URL
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
-        const product = products[productId];
+<section class="product-detail">
+    <div class="product-image">
+        <img id="productImg" src="" alt="Product Image">
+    </div>
+    <div class="product-info">
+        <h2 id="productName"></h2>
+        <p id="productPrice"></p>
+        <p id="productDescription"></p>
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" min="1" value="1">
+        <button class="add-to-cart" id="addToCart">Add to Cart</button>
+    </div>
+</section>
 
-        // Display product details
-        if (product) {
-            document.getElementById('productImg').src = product.image;
-            document.getElementById('productName').textContent = product.name;
-            document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
-            document.getElementById('productDescription').textContent = product.description;
-            document.title = `ShopEase - ${product.name}`;
-        } else {
-            document.querySelector('.product-info').innerHTML = '<h2>Product not found</h2>';
-        }
+<footer>
+    <p>&copy; 2023 ShopEase. All rights reserved.</p>
+</footer>
 
-        // Add to cart functionality
-        document.getElementById('addToCart').addEventListener('click', () => {
-            const quantity = parseInt(document.getElementById('quantity').value);
-            let cart = JSON.parse(localStorage.getItem('cart')) || [];
-            
-            // Check if product already in cart
-            const existingItem = cart.find(item => item.id === product.id);
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({ ...product, quantity });
-            }
-            
-            localStorage.setItem('cart', JSON.stringify(cart));
-            
-            // Update cart count
-            const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
-            localStorage.setItem('cartCount', totalItems);
-            
-            // Update cart display
-            document.querySelector('nav ul li:last-child a').textContent = `Cart (${totalItems})`;
-            
-            alert(`${quantity} ${product.name}(s) added to cart!`);
-        });
+<script>
+const products = {
+    1: { id: 1, name: "Wireless Headphones", price: 59.99, description: "High-quality wireless headphones with noise cancellation.", image: "https://via.placeholder.com/600" },
+    2: { id: 2, name: "Smart Watch", price: 129.99, description: "Feature-rich smartwatch with health monitoring.", image: "https://via.placeholder.com/600" },
+    3: { id: 3, name: "T-Shirt", price: 19.99, description: "Comfortable cotton t-shirt available in multiple colors.", image: "https://via.placeholder.com/600" },
+    4: { id: 4, name: "Jeans", price: 39.99, description: "Classic fit jeans made from durable denim.", image: "https://via.placeholder.com/600" },
+    5: { id: 5, name: "Coffee Maker", price: 49.99, description: "Automatic coffee maker with programmable timer.", image: "https://via.placeholder.com/600" },
+    6: { id: 6, name: "Blender", price: 34.99, description: "High-powered blender for smoothies and more.", image: "https://via.placeholder.com/600" },
+    7: { id: 7, name: "Laptop", price: 899.99, description: "Powerful laptop with high-resolution display.", image: "https://via.placeholder.com/600" },
+    8: { id: 8, name: "Desk Lamp", price: 24.99, description: "Adjustable LED desk lamp.", image: "https://via.placeholder.com/600" }
+};
 
-        // Cart count update
-        let cartCount = localStorage.getItem('cartCount') || 0;
-        document.querySelector('nav ul li:last-child a').textContent = `Cart (${cartCount})`;
-    </script>
+const urlParams = new URLSearchParams(window.location.search);
+const productId = urlParams.get('id');
+const product = products[productId];
+
+if (product) {
+    document.getElementById('productImg').src = product.image;
+    document.getElementById('productName').textContent = product.name;
+    document.getElementById('productPrice').textContent = `$${product.price.toFixed(2)}`;
+    document.getElementById('productDescription').textContent = product.description;
+
+    /* 🔥 VIEW ITEM */
+    dataLayer.push({ ecommerce: null });
+    dataLayer.push({
+      event: "view_item",
+      ecommerce: {
+        currency: "USD",
+        value: product.price,
+        items: [{
+          item_id: "SKU_" + product.id,
+          item_name: product.name,
+          item_brand: "ShopEase",
+          item_category: "general",
+          price: product.price,
+          quantity: 1
+        }]
+      }
+    });
+
+} else {
+    document.querySelector('.product-info').innerHTML = '<h2>Product not found</h2>';
+}
+
+document.getElementById('addToCart').addEventListener('click', () => {
+    const quantity = parseInt(document.getElementById('quantity').value);
+
+    /* 🔥 ADD TO CART */
+    dataLayer.push({ ecommerce: null });
+    dataLayer.push({
+      event: "add_to_cart",
+      ecommerce: {
+        currency: "USD",
+        value: product.price * quantity,
+        items: [{
+          item_id: "SKU_" + product.id,
+          item_name: product.name,
+          item_brand: "ShopEase",
+          item_category: "general",
+          price: product.price,
+          quantity: quantity
+        }]
+      }
+    });
+
+    alert(`${quantity} ${product.name}(s) added to cart!`);
+});
+</script>
+
 </body>
 </html>
