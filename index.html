@@ -16,12 +16,12 @@
       const userId = localStorage.getItem("loggedInUser");
 
       dataLayer.push({
-        page_Name: "ShopEase:Home",
-        page_Type: "homepage",
-        site_Name: "ShopEase",
+        page_name: "ShopEase:Home",
+        page_type: "homepage",
+        site_name: "ShopEase",
         language: "en-US",
-        user_Id: userId ? userId : null,
-        user_Type: userId ? "registered" : "guest"
+        user_id: userId ? userId : null,
+        user_type: userId ? "registered" : "guest"
        
       });
     })();
