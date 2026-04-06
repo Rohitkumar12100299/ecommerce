@@ -16,12 +16,13 @@
       const userId = localStorage.getItem("loggedInUser");
 
       dataLayer.push({
-        page_Name: "PLP",
-        page_Type: "plp",
-        site_Name: "ShopEase",
+        event: "page_view",
+        page_name: "PLP",
+        page_type: "plp",
+        site_name: "ShopEase",
         language: "en-US",
-        user_Id: userId ? userId : null,
-        user_Type: userId ? "registered" : "guest"
+        user_id: userId ? userId : null,
+        user_type: userId ? "registered" : "guest"
       });
     })();
   </script>
@@ -75,29 +76,47 @@ const products = [
   { id: 3, name: "Cotton T-Shirt", price: 19.99, category: "clothing", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab" }
 ];
 
-/* ================= VIEW ITEM LIST (UNCHANGED) ================= */
+
+// ================= VIEW ITEM LIST =================
 (function () {
+
   const items = products.map((product, index) => ({
     item_id: "SKU_" + product.id,
     item_name: product.name,
     affiliation: "ShopEase",
+    coupon: null,
     discount: 0,
     index: index,
     item_brand: "ShopEase",
     item_category: product.category,
-    item_list_id: "plp_products",
-    item_list_name: "ShopEase:Products",
+    item_category2: null,
+    item_category3: null,
+    item_category4: null,
+    item_category5: null,
+    item_list_id: "related_products",
+    item_list_name: "Related Products",
+    item_variant: null,
+    location_id: null,
     price: product.price,
+    google_business_vertical: "retail",
     quantity: 1
   }));
 
+  dataLayer.push({ ecommerce: null });
+
   dataLayer.push({
     event: "view_item_list",
-    items: items
+    ecommerce: {
+      item_list_id: "related_products",
+      item_list_name: "Related Products",
+      items: items
+    }
   });
+
 })();
 
-/* ================= RENDER PRODUCTS ================= */
+
+// ================= RENDER PRODUCTS =================
 function displayProducts() {
   const grid = document.getElementById("productsGrid");
   grid.innerHTML = "";
@@ -115,14 +134,16 @@ function displayProducts() {
 
     card.addEventListener("click", () => {
 
-      /* 🔥 FINAL GA4 SELECT ITEM */
+      // ================= SELECT ITEM =================
       dataLayer.push({ ecommerce: null });
 
       dataLayer.push({
         event: "select_item",
         ecommerce: {
           item_list_id: "related_products",
-          item_list_name: "Related products",
+          item_list_name: "Related Products",
+          currency: "USD",
+          value: product.price,
           items: [
             {
               item_id: "SKU_" + product.id,
@@ -149,13 +170,14 @@ function displayProducts() {
         }
       });
 
-      /* EXISTING LINK CLICK */
+      // OPTIONAL: link click tracking
       dataLayer.push({
         event: "linkClick",
-        link_Text: product.name,
-        link_Url: `product.html?id=${product.id}`
+        link_text: product.name,
+        link_url: `product.html?id=${product.id}`
       });
 
+      // Redirect
       window.location.href = `product.html?id=${product.id}`;
     });
 
