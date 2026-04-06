@@ -16,7 +16,7 @@
         const userId = localStorage.getItem("loggedInUser");
 
         dataLayer.push({
-          page_Name: "PDP",
+          page_Name: "pdp",
           page_Type: "pdp",
           site_Name: "ShopEase",
           language: "en-US",
@@ -141,6 +141,27 @@ if (product) {
 
 document.getElementById('addToCart').addEventListener('click', () => {
     const quantity = parseInt(document.getElementById('quantity').value);
+
+    // ✅ ONLY THIS BLOCK ADDED (ISSUE FIX)
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const existingProduct = cart.find(item => item.id === product.id);
+
+    if (existingProduct) {
+        existingProduct.quantity += quantity;
+    } else {
+        cart.push({
+            id: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: quantity
+        });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    let cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+    localStorage.setItem('cartCount', cartCount);
+    // ✅ END
 
     /* 🔥 ADD TO CART (YOUR FORMAT) */
     dataLayer.push({ ecommerce: null });
